@@ -98,6 +98,10 @@ func (t *TextBox) pageLines() int {
 	return (t.outer.Size().H - t.outer.Padding().H()) / t.MajorAxisItemSize()
 }
 
+func (t *TextBox) Controller() *gxui.TextBoxController {
+	return t.controller
+}
+
 func (t *TextBox) OnRedrawLines(f func()) gxui.EventSubscription {
 	return t.onRedrawLines.Listen(f)
 }

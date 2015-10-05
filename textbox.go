@@ -10,6 +10,7 @@ import (
 
 type TextBox interface {
 	Focusable
+	Controller() *TextBoxController
 	OnSelectionChanged(func()) EventSubscription
 	OnTextChanged(func([]TextBoxEdit)) EventSubscription
 	Padding() math.Spacing
