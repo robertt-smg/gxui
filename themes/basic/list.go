@@ -5,9 +5,9 @@
 package basic
 
 import (
-	"github.com/google/gxui"
-	"github.com/google/gxui/math"
-	"github.com/google/gxui/mixins"
+	"github.com/nelsam/gxui"
+	"github.com/nelsam/gxui/math"
+	"github.com/nelsam/gxui/mixins"
 )
 
 type List struct {

@@ -5,10 +5,10 @@
 package main
 
 import (
-	"github.com/google/gxui"
-	"github.com/google/gxui/drivers/gl"
-	"github.com/google/gxui/math"
-	"github.com/google/gxui/samples/flags"
+	"github.com/nelsam/gxui"
+	"github.com/nelsam/gxui/drivers/gl"
+	"github.com/nelsam/gxui/math"
+	"github.com/nelsam/gxui/samples/flags"
 )
 
 func drawStar(canvas gxui.Canvas, center math.Point, radius, rotation float32, points int) {

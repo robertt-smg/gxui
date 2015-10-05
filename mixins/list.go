@@ -7,10 +7,10 @@ package mixins
 import (
 	"fmt"
 
-	"github.com/google/gxui"
-	"github.com/google/gxui/math"
-	"github.com/google/gxui/mixins/base"
-	"github.com/google/gxui/mixins/parts"
+	"github.com/nelsam/gxui"
+	"github.com/nelsam/gxui/math"
+	"github.com/nelsam/gxui/mixins/base"
+	"github.com/nelsam/gxui/mixins/parts"
 )
 
 type ListOuter interface {

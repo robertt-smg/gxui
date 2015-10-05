@@ -7,7 +7,7 @@ package gl
 import (
 	"image"
 
-	"github.com/google/gxui/math"
+	"github.com/nelsam/gxui/math"
 	"github.com/goxjs/gl"
 )
 

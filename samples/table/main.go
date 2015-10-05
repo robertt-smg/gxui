@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/google/gxui"
-	"github.com/google/gxui/drivers/gl"
-	"github.com/google/gxui/samples/flags"
+	"github.com/nelsam/gxui"
+	"github.com/nelsam/gxui/drivers/gl"
+	"github.com/nelsam/gxui/samples/flags"
 )
 
 func appMain(driver gxui.Driver) {

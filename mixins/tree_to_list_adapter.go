@@ -5,8 +5,8 @@
 package mixins
 
 import (
-	"github.com/google/gxui"
-	"github.com/google/gxui/math"
+	"github.com/nelsam/gxui"
+	"github.com/nelsam/gxui/math"
 )
 
 // Interface used to visualize tree nodes in as a list.
