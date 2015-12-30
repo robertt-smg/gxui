@@ -7,7 +7,8 @@ package gxui
 type MouseButton int
 
 const (
-	MouseButtonLeft MouseButton = iota
+	MouseButtonInvalid MouseButton = iota
+	MouseButtonLeft
 	MouseButtonMiddle
 	MouseButtonRight
 )
