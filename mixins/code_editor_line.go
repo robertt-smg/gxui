@@ -21,9 +21,11 @@ type CodeEditorLinePaintInfo struct {
 
 type CodeEditorLineOuter interface {
 	DefaultTextBoxLineOuter
-	PaintBackgroundSpans(c gxui.Canvas, info CodeEditorLinePaintInfo)
-	PaintGlyphs(c gxui.Canvas, info CodeEditorLinePaintInfo)
-	PaintBorders(c gxui.Canvas, info CodeEditorLinePaintInfo)
+	PaintEditorSelections(gxui.Canvas, CodeEditorLinePaintInfo)
+	PaintEditorCarets(gxui.Canvas, CodeEditorLinePaintInfo)
+	PaintBackgroundSpans(gxui.Canvas, CodeEditorLinePaintInfo)
+	PaintGlyphs(gxui.Canvas, CodeEditorLinePaintInfo)
+	PaintBorders(gxui.Canvas, CodeEditorLinePaintInfo)
 }
 
 // CodeEditorLine
@@ -37,18 +39,16 @@ func (l *CodeEditorLine) Init(outer CodeEditorLineOuter, theme gxui.Theme, ce *C
 	l.DefaultTextBoxLine.Init(outer, theme, &ce.TextBox, lineIndex)
 	l.outer = outer
 	l.ce = ce
-	// Interface compliance test
-	_ = TextBoxLine(l)
 }
 
-func (t *CodeEditorLine) PaintBackgroundSpans(c gxui.Canvas, info CodeEditorLinePaintInfo) {
+func (l *CodeEditorLine) PaintBackgroundSpans(c gxui.Canvas, info CodeEditorLinePaintInfo) {
 	start, _ := info.LineSpan.Span()
 	offsets := info.GlyphOffsets
 	remaining := interval.IntDataList{info.LineSpan}
-	for _, l := range t.ce.layers {
-		if l != nil && l.BackgroundColor() != nil {
-			color := *l.BackgroundColor()
-			for _, span := range l.Spans().Overlaps(info.LineSpan) {
+	for _, layer := range l.ce.layers {
+		if layer != nil && layer.BackgroundColor() != nil {
+			color := *layer.BackgroundColor()
+			for _, span := range layer.Spans().Overlaps(info.LineSpan) {
 				interval.Visit(&remaining, span, func(vs, ve uint64, _ int) {
 					s, e := vs-start, ve-start
 					r := math.CreateRect(offsets[s].X, 0, offsets[e-1].X+info.GlyphWidth, info.LineHeight)
@@ -60,14 +60,14 @@ func (t *CodeEditorLine) PaintBackgroundSpans(c gxui.Canvas, info CodeEditorLine
 	}
 }
 
-func (t *CodeEditorLine) PaintGlyphs(c gxui.Canvas, info CodeEditorLinePaintInfo) {
+func (l *CodeEditorLine) PaintGlyphs(c gxui.Canvas, info CodeEditorLinePaintInfo) {
 	start, _ := info.LineSpan.Span()
 	runes, offsets, font := info.Runes, info.GlyphOffsets, info.Font
 	remaining := interval.IntDataList{info.LineSpan}
-	for _, l := range t.ce.layers {
-		if l != nil && l.Color() != nil {
-			color := *l.Color()
-			for _, span := range l.Spans().Overlaps(info.LineSpan) {
+	for _, layer := range l.ce.layers {
+		if layer != nil && layer.Color() != nil {
+			color := *layer.Color()
+			for _, span := range layer.Spans().Overlaps(info.LineSpan) {
 				interval.Visit(&remaining, span, func(vs, ve uint64, _ int) {
 					s, e := vs-start, ve-start
 					c.DrawRunes(font, runes[s:e], offsets[s:e], color)
@@ -79,17 +79,17 @@ func (t *CodeEditorLine) PaintGlyphs(c gxui.Canvas, info CodeEditorLinePaintInfo
 	for _, span := range remaining {
 		s, e := span.Span()
 		s, e = s-start, e-start
-		c.DrawRunes(font, runes[s:e], offsets[s:e], t.ce.textColor)
+		c.DrawRunes(font, runes[s:e], offsets[s:e], l.ce.textColor)
 	}
 }
 
-func (t *CodeEditorLine) PaintBorders(c gxui.Canvas, info CodeEditorLinePaintInfo) {
+func (l *CodeEditorLine) PaintBorders(c gxui.Canvas, info CodeEditorLinePaintInfo) {
 	start, _ := info.LineSpan.Span()
 	offsets := info.GlyphOffsets
-	for _, l := range t.ce.layers {
-		if l != nil && l.BorderColor() != nil {
-			color := *l.BorderColor()
-			interval.Visit(l.Spans(), info.LineSpan, func(vs, ve uint64, _ int) {
+	for _, layer := range l.ce.layers {
+		if layer != nil && layer.BorderColor() != nil {
+			color := *layer.BorderColor()
+			interval.Visit(layer.Spans(), info.LineSpan, func(vs, ve uint64, _ int) {
 				s, e := vs-start, ve-start
 				r := math.CreateRect(offsets[s].X, 0, offsets[e-1].X+info.GlyphWidth, info.LineHeight)
 				c.DrawRoundedRect(r, 3, 3, 3, 3, gxui.CreatePen(0.5, color), gxui.TransparentBrush)
@@ -98,53 +98,106 @@ func (t *CodeEditorLine) PaintBorders(c gxui.Canvas, info CodeEditorLinePaintInf
 	}
 }
 
+func (l *CodeEditorLine) PaintEditorCarets(c gxui.Canvas, info CodeEditorLinePaintInfo) {
+	controller := l.textbox.controller
+	for i, count := 0, controller.SelectionCount(); i < count; i++ {
+		caret := controller.Caret(i)
+		line := controller.LineIndex(caret)
+		if line == l.lineIndex {
+			var offset math.Point
+			start := controller.LineStart(line)
+			if len(info.GlyphOffsets) > 0 && caret > start {
+				caretOffsetIndex := caret - start - 1
+
+				// The offsets are the middle of where the character
+				// is; we want to be at the end.
+				charWidth := l.ce.Font().GlyphMaxSize().W
+				offset = info.GlyphOffsets[caretOffsetIndex].AddX(charWidth / 2)
+			}
+			top := math.Point{X: l.caretWidth + offset.X, Y: 0}
+			bottom := top.Add(math.Point{X: 0, Y: l.Size().H})
+			l.outer.PaintCaret(c, top, bottom)
+		}
+	}
+}
+
+func (l *CodeEditorLine) PaintEditorSelections(c gxui.Canvas, info CodeEditorLinePaintInfo) {
+	controller := l.textbox.controller
+
+	ls, le := controller.LineStart(l.lineIndex), controller.LineEnd(l.lineIndex)
+
+	selections := controller.Selections()
+	if l.textbox.selectionDragging {
+		interval.Replace(&selections, l.textbox.selectionDrag)
+	}
+	interval.Visit(&selections, gxui.CreateTextSelection(ls, le, false), func(s, e uint64, _ int) {
+		if s < e {
+			startOffset := info.GlyphOffsets[s]
+			endOffset := info.GlyphOffsets[e]
+			width := endOffset.X - startOffset.X
+			m := l.outer.MeasureRunes(int(s), int(e))
+			m.W = width
+			top := math.Point{X: l.caretWidth + startOffset.X, Y: 0}
+			bottom := top.Add(m.Point())
+			l.outer.PaintSelection(c, top, bottom)
+		}
+	})
+}
+
 // DefaultTextBoxLine overrides
-func (t *CodeEditorLine) Paint(c gxui.Canvas) {
-	font := t.ce.font
-	rect := t.Size().Rect().OffsetX(t.caretWidth)
-	controller := t.ce.controller
-	runes := controller.LineRunes(t.lineIndex)
-	start := controller.LineStart(t.lineIndex)
-	end := controller.LineEnd(t.lineIndex)
+func (l *CodeEditorLine) Paint(c gxui.Canvas) {
+	font := l.ce.Font()
+	rect := l.Size().Rect().OffsetX(l.caretWidth)
+	controller := l.ce.controller
+	runes := controller.LineRunes(l.lineIndex)
+	start := controller.LineStart(l.lineIndex)
+	end := controller.LineEnd(l.lineIndex)
 
+	var info CodeEditorLinePaintInfo
 	if start != end {
-		lineSpan := interval.CreateIntData(start, end, nil)
-
-		lineHeight := t.Size().H
-		glyphWidth := font.GlyphMaxSize().W
 		offsets := font.Layout(&gxui.TextBlock{
 			Runes:     runes,
 			AlignRect: rect,
 			H:         gxui.AlignLeft,
 			V:         gxui.AlignMiddle,
 		})
+		l.applyTabWidth(runes, offsets, font)
 
-		info := CodeEditorLinePaintInfo{
-			LineSpan:     lineSpan,
+		info = CodeEditorLinePaintInfo{
+			LineSpan:     interval.CreateIntData(start, end, nil),
 			Runes:        runes, // TODO gxui.TextBlock?
 			GlyphOffsets: offsets,
-			GlyphWidth:   glyphWidth,
-			LineHeight:   lineHeight,
+			GlyphWidth:   font.GlyphMaxSize().W,
+			LineHeight:   l.Size().H,
 			Font:         font,
 		}
 
-		// Background
-		t.outer.PaintBackgroundSpans(c, info)
+		l.outer.PaintBackgroundSpans(c, info)
 
-		// Selections
-		if t.textbox.HasFocus() {
-			t.outer.PaintSelections(c)
+		if l.textbox.HasFocus() {
+			l.outer.PaintEditorSelections(c, info)
 		}
 
-		// Glyphs
-		t.outer.PaintGlyphs(c, info)
+		l.outer.PaintGlyphs(c, info)
 
-		// Borders
-		t.outer.PaintBorders(c, info)
+		l.outer.PaintBorders(c, info)
 	}
 
-	// Carets
-	if t.textbox.HasFocus() {
-		t.outer.PaintCarets(c)
+	if l.textbox.HasFocus() {
+		l.outer.PaintEditorCarets(c, info)
 	}
+}
+
+func (l *CodeEditorLine) applyTabWidth(runes []rune, offsets []math.Point, font gxui.Font) {
+	tabWidth := font.Measure(&gxui.TextBlock{Runes: []rune{'\t'}}).W
+	spaceWidth := font.Measure(&gxui.TextBlock{Runes: []rune{' '}}).W
+	tabExtra := spaceWidth*l.ce.TabWidth() - tabWidth
+	for i, r := range runes {
+		if r == '\t' {
+			for j := i; j < len(offsets); j++ {
+				offsets[j].X += tabExtra
+			}
+		}
+	}
+	return
 }
