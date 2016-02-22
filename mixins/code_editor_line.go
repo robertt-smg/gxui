@@ -98,6 +98,12 @@ func (l *CodeEditorLine) PaintBorders(c gxui.Canvas, info CodeEditorLinePaintInf
 	}
 }
 
+// endOfChar takes a position of a character and returns the position
+// of its end.
+func (l *CodeEditorLine) endOfChar(position math.Point) math.Point {
+	return position.AddX(l.ce.Font().GlyphMaxSize().W / 2)
+}
+
 func (l *CodeEditorLine) PaintEditorCarets(c gxui.Canvas, info CodeEditorLinePaintInfo) {
 	controller := l.textbox.controller
 	for i, count := 0, controller.SelectionCount(); i < count; i++ {
@@ -108,11 +114,7 @@ func (l *CodeEditorLine) PaintEditorCarets(c gxui.Canvas, info CodeEditorLinePai
 			start := controller.LineStart(line)
 			if len(info.GlyphOffsets) > 0 && caret > start {
 				caretOffsetIndex := caret - start - 1
-
-				// The offsets are the middle of where the character
-				// is; we want to be at the end.
-				charWidth := l.ce.Font().GlyphMaxSize().W
-				offset = info.GlyphOffsets[caretOffsetIndex].AddX(charWidth / 2)
+				offset = l.endOfChar(info.GlyphOffsets[caretOffsetIndex])
 			}
 			top := math.Point{X: l.caretWidth + offset.X, Y: 0}
 			bottom := top.Add(math.Point{X: 0, Y: l.Size().H})
@@ -124,16 +126,23 @@ func (l *CodeEditorLine) PaintEditorCarets(c gxui.Canvas, info CodeEditorLinePai
 func (l *CodeEditorLine) PaintEditorSelections(c gxui.Canvas, info CodeEditorLinePaintInfo) {
 	controller := l.textbox.controller
 
-	ls, le := controller.LineStart(l.lineIndex), controller.LineEnd(l.lineIndex)
+	ls, le := uint64(controller.LineStart(l.lineIndex)), uint64(controller.LineEnd(l.lineIndex))
 
 	selections := controller.Selections()
 	if l.textbox.selectionDragging {
 		interval.Replace(&selections, l.textbox.selectionDrag)
 	}
-	interval.Visit(&selections, gxui.CreateTextSelection(ls, le, false), func(s, e uint64, _ int) {
+	interval.Visit(&selections, gxui.CreateTextSelection(int(ls), int(le), false), func(s, e uint64, _ int) {
 		if s < e {
-			startOffset := info.GlyphOffsets[s]
-			endOffset := info.GlyphOffsets[e]
+			var startOffset math.Point
+			if s > ls {
+				startOffset = l.endOfChar(info.GlyphOffsets[s-ls-1])
+			}
+			var endOffset math.Point
+			if e > ls {
+				endOffset = l.endOfChar(info.GlyphOffsets[e-ls-1])
+			}
+
 			width := endOffset.X - startOffset.X
 			m := l.outer.MeasureRunes(int(s), int(e))
 			m.W = width
