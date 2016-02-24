@@ -19,6 +19,8 @@ type CodeEditor interface {
 	SetSyntaxLayers(CodeSyntaxLayers)
 	TabWidth() int
 	SetTabWidth(int)
+	TabSpaces() bool
+	SetTabSpaces(bool)
 	SuggestionProvider() CodeSuggestionProvider
 	SetSuggestionProvider(CodeSuggestionProvider)
 	ShowSuggestionList()

@@ -5,11 +5,12 @@
 package gxui
 
 import (
-	"github.com/nelsam/gxui/interval"
-	"github.com/nelsam/gxui/math"
 	"sort"
 	"strings"
 	"unicode"
+
+	"github.com/nelsam/gxui/interval"
+	"github.com/nelsam/gxui/math"
 )
 
 type TextBoxEdit struct {
@@ -27,6 +28,7 @@ type TextBoxController struct {
 	locationHistory             [][]int
 	locationHistoryIndex        int
 	storeCaretLocationsNextEdit bool
+	indent                      string
 }
 
 func CreateTextBoxController() *TextBoxController {
@@ -88,6 +90,19 @@ func (t *TextBoxController) maybeStoreCaretLocations() {
 		t.StoreCaretLocations()
 		t.storeCaretLocationsNextEdit = false
 	}
+}
+
+func (t *TextBoxController) Indent() string {
+	return t.indent
+}
+
+func (t *TextBoxController) SetIndent(indent string) {
+	for _, r := range indent {
+		if !unicode.IsSpace(r) {
+			panic("TextBoxController: indent contained non-space characters")
+		}
+	}
+	t.indent = indent
 }
 
 func (t *TextBoxController) StoreCaretLocations() {
@@ -187,15 +202,13 @@ func (t *TextBoxController) LineEnd(i int) int {
 	return t.lineEnds[i]
 }
 
-func (t *TextBoxController) LineIndent(i int) int {
-	s, e := t.LineStart(i), t.LineEnd(i)
-	l := e - s
-	for i := 0; i < l; i++ {
-		if !unicode.IsSpace(t.text[i+s]) {
-			return i
-		}
+func (t *TextBoxController) LineIndent(lineIndex int) int {
+	line := t.Line(lineIndex)
+	indentLen := len(t.Indent())
+	i := 0
+	for ; (i+1)*indentLen < len(line) && line[i*indentLen:(i+1)*indentLen] == t.Indent(); i++ {
 	}
-	return l
+	return i
 }
 
 func (t *TextBoxController) LineIndex(p int) int {
@@ -519,16 +532,12 @@ func (t *TextBoxController) ReplaceWithNewlineKeepIndent() {
 	t.Replace(func(sel TextSelection) string {
 		s, _ := sel.Range()
 		indent := t.LineIndent(t.LineIndex(s))
-		return "\n" + strings.Repeat(" ", indent)
+		return "\n" + strings.Repeat(t.Indent(), indent)
 	})
 	t.Deselect(false)
 }
 
-func (t *TextBoxController) IndentSelection(tabWidth int) {
-	tab := make([]rune, tabWidth)
-	for i := range tab {
-		tab[i] = ' '
-	}
+func (t *TextBoxController) IndentSelection() {
 	text, edit, edits := t.text, TextBoxEdit{}, []TextBoxEdit{}
 	lastLine := -1
 	for i := len(t.selections) - 1; i >= 0; i-- {
@@ -539,7 +548,7 @@ func (t *TextBoxController) IndentSelection(tabWidth int) {
 		}
 		for l := lie; l >= lis; l-- {
 			ls := t.LineStart(l)
-			text, edit = t.ReplaceAt(text, ls, ls, tab)
+			text, edit = t.ReplaceAt(text, ls, ls, []rune(t.Indent()))
 			edits = append(edits, edit)
 		}
 		lastLine = lis
@@ -547,7 +556,7 @@ func (t *TextBoxController) IndentSelection(tabWidth int) {
 	t.SetTextEdits(text, edits)
 }
 
-func (t *TextBoxController) UnindentSelection(tabWidth int) {
+func (t *TextBoxController) UnindentSelection() {
 	text, edit, edits := t.text, TextBoxEdit{}, []TextBoxEdit{}
 	lastLine := -1
 	for i := len(t.selections) - 1; i >= 0; i-- {
@@ -557,10 +566,10 @@ func (t *TextBoxController) UnindentSelection(tabWidth int) {
 			lie--
 		}
 		for l := lie; l >= lis; l-- {
-			c := math.Min(t.LineIndent(l), tabWidth)
-			if c > 0 {
+			indents := t.LineIndent(l)
+			if indents > 0 {
 				ls := t.LineStart(l)
-				text, edit = t.ReplaceAt(text, ls, ls+c, []rune{})
+				text, edit = t.ReplaceAt(text, ls, ls+len(t.Indent()), []rune{})
 				edits = append(edits, edit)
 			}
 		}
