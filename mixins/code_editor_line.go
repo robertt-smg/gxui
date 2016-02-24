@@ -41,6 +41,19 @@ func (l *CodeEditorLine) Init(outer CodeEditorLineOuter, theme gxui.Theme, ce *C
 	l.ce = ce
 }
 
+func (l *CodeEditorLine) RuneIndexAt(p math.Point) int {
+	font := l.ce.Font()
+	controller := l.ce.Controller()
+
+	x := p.X
+	i := 0
+	offsets := l.offsets(font)
+	for ; i < len(offsets) && x > offsets[i].X; i++ {
+	}
+
+	return controller.LineStart(l.lineIndex) + i
+}
+
 func (l *CodeEditorLine) PaintBackgroundSpans(c gxui.Canvas, info CodeEditorLinePaintInfo) {
 	start, _ := info.LineSpan.Span()
 	offsets := info.GlyphOffsets
@@ -153,29 +166,32 @@ func (l *CodeEditorLine) PaintEditorSelections(c gxui.Canvas, info CodeEditorLin
 	})
 }
 
+func (l *CodeEditorLine) offsets(font gxui.Font) []math.Point {
+	rect := l.Size().Rect().OffsetX(l.caretWidth)
+	runes := l.ce.Controller().LineRunes(l.lineIndex)
+	offsets := font.Layout(&gxui.TextBlock{
+		Runes:     runes,
+		AlignRect: rect,
+		H:         gxui.AlignLeft,
+		V:         gxui.AlignMiddle,
+	})
+	l.applyTabWidth(runes, offsets, font)
+	return offsets
+}
+
 // DefaultTextBoxLine overrides
 func (l *CodeEditorLine) Paint(c gxui.Canvas) {
 	font := l.ce.Font()
-	rect := l.Size().Rect().OffsetX(l.caretWidth)
-	controller := l.ce.controller
-	runes := controller.LineRunes(l.lineIndex)
+	controller := l.ce.Controller()
 	start := controller.LineStart(l.lineIndex)
 	end := controller.LineEnd(l.lineIndex)
 
 	var info CodeEditorLinePaintInfo
 	if start != end {
-		offsets := font.Layout(&gxui.TextBlock{
-			Runes:     runes,
-			AlignRect: rect,
-			H:         gxui.AlignLeft,
-			V:         gxui.AlignMiddle,
-		})
-		l.applyTabWidth(runes, offsets, font)
-
 		info = CodeEditorLinePaintInfo{
 			LineSpan:     interval.CreateIntData(start, end, nil),
-			Runes:        runes, // TODO gxui.TextBlock?
-			GlyphOffsets: offsets,
+			Runes:        controller.LineRunes(l.lineIndex),
+			GlyphOffsets: l.offsets(font),
 			GlyphWidth:   font.GlyphMaxSize().W,
 			LineHeight:   l.Size().H,
 			Font:         font,
