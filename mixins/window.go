@@ -19,7 +19,6 @@ type WindowOuter interface {
 	outer.PaintChilder
 	outer.Painter
 	outer.Parenter
-	outer.Sized
 }
 
 type Window struct {

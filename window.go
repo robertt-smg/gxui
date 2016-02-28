@@ -26,6 +26,12 @@ type Window interface {
 	// A scale of 1 is unscaled, 2 is twice the regular scaling.
 	SetScale(float32)
 
+	// Size returns the size of this window
+	Size() math.Size
+
+	// SetSize sets the window's size
+	SetSize(math.Size)
+
 	// Position returns position of the window.
 	Position() math.Point
 
