@@ -14,8 +14,8 @@ import (
 )
 
 type TextBoxEdit struct {
-	At    int
-	Delta int
+	At, Delta int
+	Old, New  []rune
 }
 
 type TextBoxController struct {
@@ -450,14 +450,24 @@ func (t *TextBoxController) Delete() {
 	for i := len(t.selections) - 1; i >= 0; i-- {
 		s := t.selections[i]
 		if s.start == s.end && s.end < len(t.text) {
+			old := append([]rune{}, text[s.start])
 			copy(text[s.start:], text[s.start+1:])
 			text = text[:len(text)-1]
-			edits = append(edits, TextBoxEdit{s.start, -1})
+			edits = append(edits, TextBoxEdit{
+				At:    s.start,
+				Delta: -1,
+				Old:   old,
+			})
 		} else {
+			old := append([]rune{}, text[s.start:s.end]...)
 			copy(text[s.start:], text[s.end:])
-			l := s.Length()
-			text = text[:len(text)-l]
-			edits = append(edits, TextBoxEdit{s.start, -l})
+			length := s.Length()
+			text = text[:len(text)-length]
+			edits = append(edits, TextBoxEdit{
+				At:    s.start,
+				Delta: -length,
+				Old:   old,
+			})
 		}
 		t.selections[i] = TextSelection{s.end, s.end, false}
 	}
@@ -471,14 +481,24 @@ func (t *TextBoxController) Backspace() {
 	for i := len(t.selections) - 1; i >= 0; i-- {
 		s := t.selections[i]
 		if s.start == s.end && s.start > 0 {
+			old := append([]rune{}, text[s.start-1])
 			copy(text[s.start-1:], text[s.start:])
 			text = text[:len(text)-1]
-			edits = append(edits, TextBoxEdit{s.start - 1, -1})
+			edits = append(edits, TextBoxEdit{
+				At:    s.start - 1,
+				Delta: -1,
+				Old:   old,
+			})
 		} else {
+			old := append([]rune{}, text[s.start:s.end]...)
 			copy(text[s.start:], text[s.end:])
 			l := s.Length()
 			text = text[:len(text)-l]
-			edits = append(edits, TextBoxEdit{s.start - 1, -l})
+			edits = append(edits, TextBoxEdit{
+				At:    s.start - 1,
+				Delta: -l,
+				Old:   old,
+			})
 		}
 		t.selections[i] = TextSelection{s.end, s.end, false}
 	}
@@ -515,12 +535,18 @@ func (t *TextBoxController) ReplaceAt(text []rune, s, e int, replacement []rune)
 	if delta > 0 {
 		text = append(text, make([]rune, delta)...)
 	}
+	old := append([]rune{}, text[s:e]...)
 	copy(text[e+delta:], text[e:])
 	copy(text[s:], replacement)
 	if delta < 0 {
 		text = text[:len(text)+delta]
 	}
-	return text, TextBoxEdit{s, delta}
+	return text, TextBoxEdit{
+		At:    s,
+		Delta: delta,
+		Old:   old,
+		New:   replacement,
+	}
 }
 
 func (t *TextBoxController) ReplaceWithNewline() {
