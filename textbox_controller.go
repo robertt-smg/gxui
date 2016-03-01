@@ -495,7 +495,7 @@ func (t *TextBoxController) Backspace() {
 			l := s.Length()
 			text = text[:len(text)-l]
 			edits = append(edits, TextBoxEdit{
-				At:    s.start - 1,
+				At:    s.start,
 				Delta: -l,
 				Old:   old,
 			})
