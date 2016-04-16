@@ -1,6 +1,28 @@
 GXUI - A Go cross platform UI library.
 =======
 
+## My Fork
+
+For the awareness of anyone eyeing my fork of gxui:
+
+I originally forked this to solve some issues I was seeing with [the Go editor I'm writing](https://github.com/nelsam/vidar).
+I had planned to send pull requests for any bugs I managed to find and solve, but with it going unmaintained,
+I've started just aggressively changing anything that doesn't work (or read) how I want it to.  Most of my
+changes revolve around the CodeEditor and TextBox types.
+
+A note about my use of gxui for the editor: when the abandonment announcement got posted to gxui's README,
+I spent some time looking at other libraries.  There are plenty of others out there.  However, nothing I saw
+looked like it would be a quick swap - gxui just feels easy to use by comparison.  That may be due to me
+being used to gxui at this point, but that's beside the point.  Eventually, I decided I would rather
+maintain a fork than try to port to another UI library.
+
+If things continue to progress with my editor, there may be a day when I start maintaining my fork as a tested,
+maintained fork from the original project; but for now, I'm just making fixes when I come across things my
+editor needs, and usually making minor changes whenever I'm looking at code to make it easier for me to read.
+
+I'm (for the moment) leaving this README as-is other than this minor blurb, so the gitter link will still be
+pointing to upstream's gitter.im and whatnot.
+
 [![Join the chat at https://gitter.im/google/gxui](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/google/gxui?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/google/gxui.svg?branch=master)](https://travis-ci.org/google/gxui) [![GoDoc](https://godoc.org/github.com/google/gxui?status.svg)](https://godoc.org/github.com/google/gxui)
 
 Disclaimer
