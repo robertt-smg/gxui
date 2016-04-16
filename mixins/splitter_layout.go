@@ -139,11 +139,15 @@ func (l *SplitterLayout) SplitterDragged(splitter gxui.Control, wndPnt math.Poin
 // parts.Container overrides
 func (l *SplitterLayout) AddChildAt(index int, control gxui.Control) *gxui.Child {
 	l.weights[control] = 1.0
-	if len(l.Container.Children()) > 0 {
-		l.Container.AddChildAt(index, l.outer.CreateSplitterBar())
-		index++
+	child := l.Container.AddChildAt(index, control)
+	if len(l.Container.Children()) > 1 {
+		barIndex := index
+		if index == 0 {
+			barIndex++
+		}
+		l.Container.AddChildAt(barIndex, l.outer.CreateSplitterBar())
 	}
-	return l.Container.AddChildAt(index, control)
+	return child
 }
 
 func (l *SplitterLayout) RemoveChildAt(index int) {
