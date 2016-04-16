@@ -149,7 +149,12 @@ func (l *SplitterLayout) AddChildAt(index int, control gxui.Control) *gxui.Child
 func (l *SplitterLayout) RemoveChildAt(index int) {
 	children := l.Container.Children()
 	if len(children) > 1 {
-		l.Container.RemoveChildAt(index + 1)
+		barLocation := index + 1
+		if barLocation == len(children) {
+			index--
+			barLocation = index
+		}
+		l.Container.RemoveChildAt(index)
 	}
 	delete(l.weights, children[index].Control)
 	l.Container.RemoveChildAt(index)
