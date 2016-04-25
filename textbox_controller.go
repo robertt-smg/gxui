@@ -53,7 +53,7 @@ func (t *TextBoxController) updateSelectionsForEdits(edits []TextBoxEdit) {
 		for _, e := range edits {
 			at := e.At
 			delta := e.Delta
-			if selection.start > at {
+			if selection.start >= at {
 				selection.start += delta
 			}
 			if selection.end >= at {
