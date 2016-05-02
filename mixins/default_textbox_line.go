@@ -28,6 +28,7 @@ type DefaultTextBoxLine struct {
 	textbox    *TextBox
 	lineIndex  int
 	caretWidth int
+	offset     int
 }
 
 func (t *DefaultTextBoxLine) Init(outer DefaultTextBoxLineOuter, theme gxui.Theme, textbox *TextBox, lineIndex int) {
@@ -43,6 +44,10 @@ func (t *DefaultTextBoxLine) Init(outer DefaultTextBoxLineOuter, theme gxui.Them
 
 	// Interface compliance test
 	_ = TextBoxLine(t)
+}
+
+func (t *DefaultTextBoxLine) SetOffset(offset int) {
+	t.offset = offset
 }
 
 func (t *DefaultTextBoxLine) SetCaretWidth(width int) {
@@ -69,9 +74,11 @@ func (t *DefaultTextBoxLine) Paint(c gxui.Canvas) {
 
 func (t *DefaultTextBoxLine) MeasureRunes(s, e int) math.Size {
 	controller := t.textbox.controller
-	return t.textbox.font.Measure(&gxui.TextBlock{
+	size := t.textbox.font.Measure(&gxui.TextBlock{
 		Runes: controller.TextRunes()[s:e],
 	})
+	size.W -= t.offset
+	return size
 }
 
 func (t *DefaultTextBoxLine) PaintText(c gxui.Canvas) {
@@ -83,6 +90,9 @@ func (t *DefaultTextBoxLine) PaintText(c gxui.Canvas) {
 		H:         gxui.AlignLeft,
 		V:         gxui.AlignBottom,
 	})
+	for i, offset := range offsets {
+		offsets[i] = offset.AddX(-t.offset)
+	}
 	c.DrawRunes(f, runes, offsets, t.textbox.textColor)
 }
 

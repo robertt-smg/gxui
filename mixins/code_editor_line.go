@@ -176,6 +176,9 @@ func (l *CodeEditorLine) offsets(font gxui.Font) []math.Point {
 		V:         gxui.AlignMiddle,
 	})
 	l.applyTabWidth(runes, offsets, font)
+	for i, offset := range offsets {
+		offsets[i] = offset.AddX(-l.offset)
+	}
 	return offsets
 }
 

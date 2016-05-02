@@ -16,10 +16,12 @@ type TextBoxLine interface {
 	gxui.Control
 	RuneIndexAt(math.Point) int
 	PositionAt(int) math.Point
+	SetOffset(int)
 }
 
 type TextBoxOuter interface {
 	ListOuter
+	MaxLineLength() int
 	CreateLine(theme gxui.Theme, index int) (line TextBoxLine, container gxui.Control)
 }
 
@@ -39,6 +41,10 @@ type TextBox struct {
 	selectionDragging bool
 	selectionDrag     gxui.TextSelection
 	desiredWidth      int
+
+	horizScroll      gxui.ScrollBar
+	horizScrollChild *gxui.Child
+	horizOffset      int
 }
 
 func (t *TextBox) lineMouseDown(line TextBoxLine, ev gxui.MouseEvent) {
@@ -76,6 +82,13 @@ func (t *TextBox) Init(outer TextBoxOuter, driver gxui.Driver, theme gxui.Theme,
 	t.SetScrollBarEnabled(false) // Defaults to single line
 	t.OnGainedFocus(func() { t.onRedrawLines.Fire() })
 	t.OnLostFocus(func() { t.onRedrawLines.Fire() })
+	t.horizScroll = theme.CreateScrollBar()
+	t.horizScrollChild = t.AddChild(t.horizScroll)
+	t.horizScroll.SetOrientation(gxui.Horizontal)
+	t.horizScroll.OnScroll(func(from, to int) {
+		t.SetHorizOffset(from)
+	})
+
 	t.controller.OnTextChanged(func([]gxui.TextBoxEdit) {
 		t.onRedrawLines.Fire()
 		t.List.DataChanged(false)
@@ -88,6 +101,67 @@ func (t *TextBox) Init(outer TextBoxOuter, driver gxui.Driver, theme gxui.Theme,
 
 	// Interface compliance test
 	_ = gxui.TextBox(t)
+}
+
+func (t *TextBox) MaxLineLength() int {
+	maxLength := 0
+	lines := t.Controller().LineCount()
+	for line := 0; line < lines; line++ {
+		if length := t.LineEnd(line) - t.LineStart(line); length > maxLength {
+			maxLength = length
+		}
+	}
+	return maxLength
+}
+
+func (t *TextBox) LayoutChildren() {
+	t.List.LayoutChildren()
+	if t.scrollBarEnabled {
+		size := t.Size()
+		offset := t.Padding().LT()
+		barSize := t.horizScroll.DesiredSize(math.ZeroSize, size)
+		t.horizScrollChild.Layout(math.CreateRect(0, size.H-barSize.H, size.W, size.H).Canon().Offset(offset))
+
+		maxLineWidth := t.outer.MaxLineLength() * t.font.GlyphMaxSize().W
+		entireContentVisible := size.W > maxLineWidth
+		t.horizScroll.SetVisible(!entireContentVisible)
+	}
+}
+
+func (t *TextBox) updateChildOffsets(parent gxui.Parent, offset int) {
+	for _, child := range parent.Children() {
+		switch src := child.Control.(type) {
+		case TextBoxLine:
+			src.SetOffset(offset)
+		case gxui.Parent:
+			t.updateChildOffsets(src, offset)
+		}
+	}
+}
+
+func (t *TextBox) SetHorizOffset(offset int) {
+	t.updateChildOffsets(t, offset)
+	maxWidth := t.MaxLineLength() * t.font.GlyphMaxSize().W
+	size := t.Size().Contract(t.outer.Padding())
+	maxScroll := math.Max(maxWidth-size.W, 0)
+	math.Clamp(offset, 0, maxScroll)
+	t.horizScroll.SetScrollLimit(maxWidth)
+	t.horizScroll.SetScrollPosition(offset, offset+size.W)
+	if t.horizOffset != offset {
+		t.horizOffset = offset
+		t.LayoutChildren()
+		t.Redraw()
+	}
+}
+
+func (t *TextBox) SetSize(size math.Size) {
+	t.List.SetSize(size)
+	t.SetHorizOffset(t.horizOffset)
+}
+
+func (t *TextBox) SizeChanged() {
+	t.SetHorizOffset(t.horizOffset)
+	t.outer.Relayout()
 }
 
 func (t *TextBox) textRect() math.Rect {
@@ -470,6 +544,7 @@ func (t *TextBoxAdapter) Size(theme gxui.Theme) math.Size {
 
 func (t *TextBoxAdapter) Create(theme gxui.Theme, index int) gxui.Control {
 	line, container := t.TextBox.outer.CreateLine(theme, index)
+	line.SetOffset(t.TextBox.horizOffset)
 	line.OnMouseDown(func(ev gxui.MouseEvent) {
 		t.TextBox.lineMouseDown(line, ev)
 	})
