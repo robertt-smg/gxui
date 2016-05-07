@@ -48,6 +48,7 @@ func (t *DefaultTextBoxLine) Init(outer DefaultTextBoxLineOuter, theme gxui.Them
 
 func (t *DefaultTextBoxLine) SetOffset(offset int) {
 	t.offset = offset
+	t.Redraw()
 }
 
 func (t *DefaultTextBoxLine) SetCaretWidth(width int) {

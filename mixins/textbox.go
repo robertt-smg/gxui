@@ -117,10 +117,13 @@ func (t *TextBox) MaxLineLength() int {
 func (t *TextBox) LayoutChildren() {
 	t.List.LayoutChildren()
 	if t.scrollBarEnabled {
-		size := t.Size()
+		size := t.Size().Contract(t.Padding())
+		scrollAreaSize := size
+		scrollAreaSize.W -= t.scrollBar.Size().W
+
 		offset := t.Padding().LT()
-		barSize := t.horizScroll.DesiredSize(math.ZeroSize, size)
-		t.horizScrollChild.Layout(math.CreateRect(0, size.H-barSize.H, size.W, size.H).Canon().Offset(offset))
+		barSize := t.horizScroll.DesiredSize(math.ZeroSize, scrollAreaSize)
+		t.horizScrollChild.Layout(math.CreateRect(0, size.H-barSize.H, scrollAreaSize.W, size.H).Canon().Offset(offset))
 
 		maxLineWidth := t.outer.MaxLineLength() * t.font.GlyphMaxSize().W
 		entireContentVisible := size.W > maxLineWidth
@@ -139,18 +142,21 @@ func (t *TextBox) updateChildOffsets(parent gxui.Parent, offset int) {
 	}
 }
 
-func (t *TextBox) SetHorizOffset(offset int) {
-	t.updateChildOffsets(t, offset)
+func (t *TextBox) updateHorizScrollLimit() {
 	maxWidth := t.MaxLineLength() * t.font.GlyphMaxSize().W
 	size := t.Size().Contract(t.outer.Padding())
 	maxScroll := math.Max(maxWidth-size.W, 0)
-	math.Clamp(offset, 0, maxScroll)
+	math.Clamp(t.horizOffset, 0, maxScroll)
 	t.horizScroll.SetScrollLimit(maxWidth)
-	t.horizScroll.SetScrollPosition(offset, offset+size.W)
+}
+
+func (t *TextBox) SetHorizOffset(offset int) {
+	t.updateHorizScrollLimit()
+	t.updateChildOffsets(t, offset)
+	t.horizScroll.SetScrollPosition(offset, offset+t.Size().W)
 	if t.horizOffset != offset {
 		t.horizOffset = offset
 		t.LayoutChildren()
-		t.Redraw()
 	}
 }
 
