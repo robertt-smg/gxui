@@ -201,13 +201,8 @@ func (l *CodeEditorLine) Paint(c gxui.Canvas) {
 		}
 
 		l.outer.PaintBackgroundSpans(c, info)
-
-		if l.textbox.HasFocus() {
-			l.outer.PaintEditorSelections(c, info)
-		}
-
+		l.outer.PaintEditorSelections(c, info)
 		l.outer.PaintGlyphs(c, info)
-
 		l.outer.PaintBorders(c, info)
 	}
 
