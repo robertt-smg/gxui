@@ -150,6 +150,10 @@ func (t *TextBox) updateHorizScrollLimit() {
 	t.horizScroll.SetScrollLimit(maxWidth)
 }
 
+func (t *TextBox) HorizOffset() int {
+	return t.horizOffset
+}
+
 func (t *TextBox) SetHorizOffset(offset int) {
 	t.updateHorizScrollLimit()
 	t.updateChildOffsets(t, offset)

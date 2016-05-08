@@ -221,6 +221,10 @@ func (l *List) SetScrollBarEnabled(enabled bool) {
 	}
 }
 
+func (l *List) ScrollOffset() int {
+	return l.scrollOffset
+}
+
 func (l *List) SetScrollOffset(scrollOffset int) {
 	if l.adapter == nil {
 		return
