@@ -313,7 +313,7 @@ func (l *List) PaintSelection(c gxui.Canvas, r math.Rect) {
 }
 
 func (l *List) PaintMouseOverBackground(c gxui.Canvas, r math.Rect) {
-	c.DrawRoundedRect(r, 2.0, 2.0, 2.0, 2.0, gxui.TransparentPen, gxui.CreateBrush(gxui.Gray90))
+	c.DrawRoundedRect(r, 2.0, 2.0, 2.0, 2.0, gxui.TransparentPen, gxui.CreateBrush(gxui.Gray30))
 }
 
 func (l *List) SelectPrevious() {
