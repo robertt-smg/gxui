@@ -481,7 +481,7 @@ func (t *TextBox) KeyPress(ev gxui.KeyboardEvent) (consume bool) {
 }
 
 func (t *TextBox) KeyStroke(ev gxui.KeyStrokeEvent) (consume bool) {
-	if !ev.Modifier.Control() && !ev.Modifier.Alt() {
+	if ev.Modifier == 0 || ev.Modifier.Shift() {
 		t.controller.ReplaceAllRunes([]rune{ev.Character})
 		t.controller.Deselect(false)
 	}
