@@ -311,11 +311,7 @@ func (t *TextBox) ScrollToLine(i int) {
 }
 
 func (t *TextBox) ScrollToRune(i int) {
-	line := t.controller.LineIndex(i)
-	t.ScrollToLine(line)
-	col := i - t.controller.LineStart(line)
-	horizOffset := col * t.Font().GlyphMaxSize().W
-	t.SetHorizOffset(horizOffset)
+	t.ScrollToLine(t.controller.LineIndex(i))
 }
 
 func (t *TextBox) KeyPress(ev gxui.KeyboardEvent) (consume bool) {
