@@ -186,6 +186,12 @@ func (l *CodeEditorLine) offsets(font gxui.Font) []math.Point {
 func (l *CodeEditorLine) Paint(c gxui.Canvas) {
 	font := l.ce.Font()
 	controller := l.ce.Controller()
+	if l.lineIndex >= controller.LineCount() {
+		// The controller's text differs slightly from the
+		// CodeEditor's lines - best to avoid the panic on
+		// the next few lines.
+		return
+	}
 	start := controller.LineStart(l.lineIndex)
 	end := controller.LineEnd(l.lineIndex)
 
