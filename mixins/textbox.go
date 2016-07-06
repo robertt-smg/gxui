@@ -21,7 +21,7 @@ type TextBoxLine interface {
 
 type TextBoxOuter interface {
 	ListOuter
-	MaxLineLength() int
+	MaxLineWidth() int
 	CreateLine(theme gxui.Theme, index int) (line TextBoxLine, container gxui.Control)
 }
 
@@ -103,15 +103,36 @@ func (t *TextBox) Init(outer TextBoxOuter, driver gxui.Driver, theme gxui.Theme,
 	_ = gxui.TextBox(t)
 }
 
-func (t *TextBox) MaxLineLength() int {
-	maxLength := 0
+func (t *TextBox) MaxLineWidth() int {
+	maxWidth := 0
 	lines := t.Controller().LineCount()
-	for line := 0; line < lines; line++ {
-		if length := t.LineEnd(line) - t.LineStart(line); length > maxLength {
-			maxLength = length
+	for i := 0; i < lines; i++ {
+		line, _ := t.CreateLine(t.theme, i)
+		lastPos := line.PositionAt(t.Controller().LineEnd(i))
+		width := t.lineWidthOffset() + lastPos.X
+		if width > maxWidth {
+			maxWidth = width
 		}
 	}
-	return maxLength
+	return maxWidth
+}
+
+func (t *TextBox) lineWidthOffset() int {
+	return findLineOffset(t.Children()[0])
+}
+
+func findLineOffset(child *gxui.Child) int {
+	switch src := child.Control.(type) {
+	case TextBoxLine:
+		return child.Offset.X
+	case gxui.Parent:
+		for _, child := range src.Children() {
+			if offset := findLineOffset(child); offset != -1 {
+				return child.Offset.X + offset
+			}
+		}
+	}
+	return -1
 }
 
 func (t *TextBox) LayoutChildren() {
@@ -125,7 +146,7 @@ func (t *TextBox) LayoutChildren() {
 		barSize := t.horizScroll.DesiredSize(math.ZeroSize, scrollAreaSize)
 		t.horizScrollChild.Layout(math.CreateRect(0, size.H-barSize.H, scrollAreaSize.W, size.H).Canon().Offset(offset))
 
-		maxLineWidth := t.outer.MaxLineLength() * t.font.GlyphMaxSize().W
+		maxLineWidth := t.outer.MaxLineWidth()
 		entireContentVisible := size.W > maxLineWidth
 		t.horizScroll.SetVisible(!entireContentVisible)
 	}
@@ -143,7 +164,7 @@ func (t *TextBox) updateChildOffsets(parent gxui.Parent, offset int) {
 }
 
 func (t *TextBox) updateHorizScrollLimit() {
-	maxWidth := t.MaxLineLength() * t.font.GlyphMaxSize().W
+	maxWidth := t.MaxLineWidth()
 	size := t.Size().Contract(t.outer.Padding())
 	maxScroll := math.Max(maxWidth-size.W, 0)
 	math.Clamp(t.horizOffset, 0, maxScroll)
@@ -311,7 +332,22 @@ func (t *TextBox) ScrollToLine(i int) {
 }
 
 func (t *TextBox) ScrollToRune(i int) {
-	t.ScrollToLine(t.controller.LineIndex(i))
+	lineIndex := t.controller.LineIndex(i)
+	t.ScrollToLine(lineIndex)
+
+	size := t.Size()
+	lineOffset := t.lineWidthOffset()
+	padding := t.Padding()
+	horizStart := t.horizOffset
+	horizEnd := t.horizOffset + size.W - padding.W() - lineOffset
+	line, _ := t.outer.CreateLine(t.theme, lineIndex)
+	pos := line.PositionAt(i)
+	if horizStart > pos.X {
+		t.SetHorizOffset(pos.X)
+	}
+	if horizEnd < pos.X {
+		t.SetHorizOffset(pos.X - size.W + padding.W() + lineOffset)
+	}
 }
 
 func (t *TextBox) KeyPress(ev gxui.KeyboardEvent) (consume bool) {
