@@ -217,10 +217,28 @@ func (l *CodeEditorLine) Paint(c gxui.Canvas) {
 	}
 }
 
-func (l *CodeEditorLine) applyTabWidth(runes []rune, offsets []math.Point, font gxui.Font) {
+func (l *CodeEditorLine) PositionAt(runeIndex int) math.Point {
+	tabDiff := l.tabDelta(l.textbox.Font())
+	point := l.DefaultTextBoxLine.PositionAt(runeIndex)
+	for _, r := range l.textbox.Controller().LineRunes(l.lineIndex) {
+		if r == '\t' {
+			point.X += tabDiff
+		}
+	}
+	return point
+}
+
+// tabDelta returns the difference between the current font's measurement
+// of a tab character and the actual tab size based on spaces times the
+// code editor's tab width.
+func (l *CodeEditorLine) tabDelta(font gxui.Font) int {
 	tabWidth := font.Measure(&gxui.TextBlock{Runes: []rune{'\t'}}).W
 	spaceWidth := font.Measure(&gxui.TextBlock{Runes: []rune{' '}}).W
-	tabExtra := spaceWidth*l.ce.TabWidth() - tabWidth
+	return spaceWidth*l.ce.TabWidth() - tabWidth
+}
+
+func (l *CodeEditorLine) applyTabWidth(runes []rune, offsets []math.Point, font gxui.Font) {
+	tabExtra := l.tabDelta(font)
 	for i, r := range runes {
 		if r == '\t' {
 			for j := i; j < len(offsets); j++ {
