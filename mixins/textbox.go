@@ -108,7 +108,11 @@ func (t *TextBox) MaxLineWidth() int {
 	lines := t.Controller().LineCount()
 	for i := 0; i < lines; i++ {
 		line, _ := t.CreateLine(t.theme, i)
-		lastPos := line.PositionAt(t.Controller().LineEnd(i))
+		lineEnd := t.Controller().LineEnd(i)
+		if lineEnd > len(t.Controller().TextRunes()) {
+			continue
+		}
+		lastPos := line.PositionAt(lineEnd)
 		width := t.lineWidthOffset() + lastPos.X
 		if width > maxWidth {
 			maxWidth = width
@@ -341,6 +345,9 @@ func (t *TextBox) ScrollToRune(i int) {
 	horizStart := t.horizOffset
 	horizEnd := t.horizOffset + size.W - padding.W() - lineOffset
 	line, _ := t.outer.CreateLine(t.theme, lineIndex)
+	if i < 0 || i > len(t.Controller().TextRunes()) {
+		return
+	}
 	pos := line.PositionAt(i)
 	if horizStart > pos.X {
 		t.SetHorizOffset(pos.X)
