@@ -4,9 +4,7 @@
 
 package gxui
 
-import (
-	"github.com/nelsam/gxui/math"
-)
+import "github.com/nelsam/gxui/math"
 
 type Window interface {
 	Container
@@ -43,6 +41,9 @@ type Window interface {
 
 	// SetFullscreen makes the window either full-screen or windowed.
 	SetFullscreen(bool)
+
+	// Viewport returns this window's viewport.
+	Viewport() Viewport
 
 	// Show makes the window visible.
 	Show()

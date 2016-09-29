@@ -9,11 +9,12 @@ import (
 	"sync/atomic"
 	"unicode"
 
+	glfw32 "github.com/go-gl/glfw/v3.2/glfw"
+	"github.com/goxjs/gl"
+	"github.com/goxjs/glfw"
 	"github.com/nelsam/gxui"
 	"github.com/nelsam/gxui/drivers/gl/platform"
 	"github.com/nelsam/gxui/math"
-	"github.com/goxjs/gl"
-	"github.com/goxjs/glfw"
 )
 
 const viewportDebugEnabled = false
@@ -380,6 +381,10 @@ func (v *viewport) SetPosition(pos math.Point) {
 	v.driver.asyncDriver(func() {
 		v.window.SetPos(pos.X, pos.Y)
 	})
+}
+
+func (v *viewport) SetCursor(c *glfw32.Cursor) {
+	v.window.SetCursor(c)
 }
 
 func (v *viewport) Fullscreen() bool {

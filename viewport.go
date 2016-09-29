@@ -5,6 +5,7 @@
 package gxui
 
 import (
+	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/nelsam/gxui/math"
 )
 
@@ -45,6 +46,9 @@ type Viewport interface {
 
 	// SetPosition changes position of the window.
 	SetPosition(math.Point)
+
+	// SetCursor sets the cursor to c.
+	SetCursor(*glfw.Cursor)
 
 	// Show makes the window visible.
 	Show()
