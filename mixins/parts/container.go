@@ -122,8 +122,8 @@ func (c *Container) RemoveChildAt(index int) {
 }
 
 func (c *Container) RemoveAll() {
-	for i := len(c.children) - 1; i >= 0; i-- {
-		c.outer.RemoveChildAt(i)
+	for len(c.children) > 0 {
+		c.outer.RemoveChildAt(0)
 	}
 }
 

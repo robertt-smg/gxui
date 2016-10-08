@@ -137,6 +137,7 @@ func (l *SplitterLayout) SplitterDragged(splitter gxui.Control, wndPnt math.Poin
 }
 
 // parts.Container overrides
+
 func (l *SplitterLayout) AddChildAt(index int, control gxui.Control) *gxui.Child {
 	l.weights[control] = 1.0
 	child := l.Container.AddChildAt(index, control)
