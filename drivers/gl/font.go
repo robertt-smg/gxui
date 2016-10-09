@@ -122,6 +122,10 @@ func (f *font) DrawRunes(ctx *context, runes []rune, offsets []math.Point, col g
 	}
 }
 
+func (f *font) Index(r rune) truetype.Index {
+	return f.ttf.Index(r)
+}
+
 func (f *font) Size() int {
 	return f.size
 }

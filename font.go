@@ -5,6 +5,7 @@
 package gxui
 
 import (
+	"github.com/golang/freetype/truetype"
 	"github.com/nelsam/gxui/math"
 )
 
@@ -15,6 +16,7 @@ type Font interface {
 	GlyphMaxSize() math.Size
 	Measure(*TextBlock) math.Size
 	Layout(*TextBlock) (offsets []math.Point)
+	Index(rune) truetype.Index
 }
 
 // TextBlock is a sequence of runes to be laid out.
