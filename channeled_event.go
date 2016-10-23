@@ -9,15 +9,19 @@ import (
 	"sync"
 )
 
-type ChanneledEvent struct {
-	sync.RWMutex
-	base    EventBase
-	channel chan func()
+type EventQueue interface {
+	Inject(func())
 }
 
-func CreateChanneledEvent(signature interface{}, channel chan func()) Event {
+type ChanneledEvent struct {
+	sync.RWMutex
+	base  EventBase
+	queue EventQueue
+}
+
+func CreateChanneledEvent(signature interface{}, queue EventQueue) Event {
 	e := &ChanneledEvent{
-		channel: channel,
+		queue: queue,
 	}
 	e.base.init(signature)
 	baseUnlisten := e.base.unlisten
@@ -31,11 +35,11 @@ func CreateChanneledEvent(signature interface{}, channel chan func()) Event {
 
 func (e *ChanneledEvent) Fire(args ...interface{}) {
 	e.base.VerifyArguments(args)
-	e.channel <- func() {
+	e.queue.Inject(func() {
 		e.RLock()
 		e.base.InvokeListeners(args)
 		e.RUnlock()
-	}
+	})
 }
 
 func (e *ChanneledEvent) Listen(listener interface{}) EventSubscription {

@@ -12,10 +12,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/math"
 	"github.com/goxjs/gl"
 	"github.com/goxjs/glfw"
+	"github.com/nelsam/gxui"
+	"github.com/nelsam/gxui/math"
 )
 
 // Maximum time allowed for application to process events on termination.
@@ -26,8 +26,8 @@ func init() {
 }
 
 type driver struct {
-	pendingDriver chan func()
-	pendingApp    chan func()
+	pendingDriver *CallQueue
+	pendingApp    *CallQueue
 	terminated    int32 // non-zero represents driver terminations
 	viewports     *list.List
 
@@ -47,20 +47,20 @@ func StartDriver(appRoutine func(driver gxui.Driver)) {
 	defer glfw.Terminate()
 
 	driver := &driver{
-		pendingDriver: make(chan func(), 256),
-		pendingApp:    make(chan func(), 256),
+		pendingDriver: NewCallQueue(),
+		pendingApp:    NewCallQueue(),
 		viewports:     list.New(),
 		pcs:           make([]uintptr, 256),
 	}
 
-	driver.pendingApp <- driver.discoverUIGoRoutine
-	driver.pendingApp <- func() { appRoutine(driver) }
+	driver.pendingApp.Inject(driver.discoverUIGoRoutine)
+	driver.pendingApp.Inject(func() { appRoutine(driver) })
 	go driver.applicationLoop()
 	driver.driverLoop()
 }
 
 func (d *driver) asyncDriver(f func()) {
-	d.pendingDriver <- f
+	d.pendingDriver.Inject(f)
 	d.wake()
 }
 
@@ -84,16 +84,15 @@ func (d *driver) createAppEvent(signature interface{}) gxui.Event {
 // call to wake() so that glfw.WaitEvents can return.
 func (d *driver) driverLoop() {
 	for {
-		select {
-		case ev, open := <-d.pendingDriver:
-			if open {
-				ev()
-			} else {
-				return // termintated
-			}
-		default:
-			glfw.WaitEvents()
+		ev, ok := d.pendingDriver.Pop()
+		if !ok {
+			return
 		}
+		if ev == nil {
+			glfw.WaitEvents()
+			continue
+		}
+		ev()
 	}
 }
 
@@ -104,7 +103,11 @@ func (d *driver) wake() {
 // applicationLoop pulls and executes funcs from the pendingApp chan until
 // the chan is closed.
 func (d *driver) applicationLoop() {
-	for ev := range d.pendingApp {
+	for {
+		ev, ok := d.pendingApp.PopWhenReady()
+		if !ok {
+			return
+		}
 		ev()
 	}
 }
@@ -117,7 +120,7 @@ func (d *driver) Call(f func()) bool {
 	if atomic.LoadInt32(&d.terminated) != 0 {
 		return false // Driver.Terminate has been called
 	}
-	d.pendingApp <- f
+	d.pendingApp.Inject(f)
 	return true
 }
 
@@ -146,22 +149,20 @@ func (d *driver) Terminate() {
 			// Process any application events
 			sync := make(chan struct{})
 			d.Call(func() {
-				select {
-				case ev := <-d.pendingApp:
-					ev()
+				defer close(sync)
+				ev, _ := d.pendingApp.Pop()
+				if ev != nil {
 					done = false
-				default:
+					ev()
 				}
-				close(sync)
 			})
 			<-sync
 
 			// Process any driver events
-			select {
-			case ev := <-d.pendingDriver:
-				ev()
+			ev, _ := d.pendingDriver.Pop()
+			if ev != nil {
 				done = false
-			default:
+				ev()
 			}
 
 			if done {
@@ -171,8 +172,8 @@ func (d *driver) Terminate() {
 
 		// All done.
 		atomic.StoreInt32(&d.terminated, 1)
-		close(d.pendingApp)
-		close(d.pendingDriver)
+		d.pendingApp.Close()
+		d.pendingDriver.Close()
 
 		d.viewports = nil
 	})
