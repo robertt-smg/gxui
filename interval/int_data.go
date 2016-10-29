@@ -57,7 +57,7 @@ func (l IntDataList) Copy(to, from, count int) {
 	copy(l[to:to+count], l[from:from+count])
 }
 
-func (l IntDataList) GetInterval(index int) (start, end uint64) {
+func (l IntDataList) Interval(index int) (start, end uint64) {
 	return l[index].Span()
 }
 

@@ -8,34 +8,27 @@ import "github.com/nelsam/gxui/interval"
 
 type TextSelectionList []TextSelection
 
-func (l TextSelectionList) Transform(from int, transform func(i int) int) TextSelectionList {
+func (l TextSelectionList) Transform(transform SelectionTransform) TextSelectionList {
 	res := TextSelectionList{}
 	for _, s := range l {
-		start := s.start
-		end := s.end
-		if start >= from {
-			start = transform(start)
-		}
-		if end >= from {
-			end = transform(end)
-		}
-		interval.Merge(&res, TextSelection{start, end, s.caretAtStart})
+		interval.Merge(&res, transform(s))
 	}
 	return res
 }
 
-func (l TextSelectionList) TransformCarets(from int, transform func(i int) int) TextSelectionList {
+func (l TextSelectionList) TransformCarets(transform SelectionTransform) TextSelectionList {
 	res := TextSelectionList{}
 	for _, s := range l {
-		if s.caretAtStart && s.start >= from {
-			s.start = transform(s.start)
-		} else if s.end >= from {
-			s.end = transform(s.end)
+		moved := transform(s)
+		if s.caretAtStart {
+			s.start = moved.start
+			s.storedStart = moved.storedStart
+		} else {
+			s.end = moved.end
+			s.storedEnd = moved.storedEnd
 		}
 		if s.start > s.end {
-			tmp := s.start
-			s.start = s.end
-			s.end = tmp
+			s.start, s.end = s.end, s.start
 			s.caretAtStart = !s.caretAtStart
 		}
 		interval.Merge(&res, s)
@@ -65,7 +58,7 @@ func (l TextSelectionList) Copy(to, from, count int) {
 	copy(l[to:to+count], l[from:from+count])
 }
 
-func (l TextSelectionList) GetInterval(index int) (start, end uint64) {
+func (l TextSelectionList) Interval(index int) (start, end uint64) {
 	return l[index].Span()
 }
 
@@ -75,5 +68,8 @@ func (l TextSelectionList) SetInterval(index int, start, end uint64) {
 }
 
 func (l TextSelectionList) MergeData(index int, i interval.Node) {
-	l[index].caretAtStart = i.(TextSelection).caretAtStart
+	sel := i.(TextSelection)
+	l[index].caretAtStart = sel.caretAtStart
+	l[index].storedStart = sel.storedStart
+	l[index].storedEnd = sel.storedEnd
 }

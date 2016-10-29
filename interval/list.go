@@ -12,7 +12,7 @@ type Node interface {
 
 type RList interface {
 	Len() int
-	GetInterval(index int) (start, end uint64)
+	Interval(index int) (start, end uint64)
 	SetInterval(index int, start, end uint64)
 }
 
@@ -88,7 +88,7 @@ func Visit(l RList, i Node, v Visitor) {
 	s := intersection{}
 	s.intersect(l, start, end)
 	for index := s.lowIndex; index < s.lowIndex+s.overlap; index++ {
-		s, e := l.GetInterval(index)
+		s, e := l.Interval(index)
 		if s < start {
 			s = start
 		}
@@ -105,12 +105,12 @@ func Contains(l RList, p uint64) bool {
 
 func IndexOf(l RList, p uint64) int {
 	index := sort.Search(l.Len(), func(at int) bool {
-		iStart, _ := l.GetInterval(at)
+		iStart, _ := l.Interval(at)
 		return p < iStart
 	})
 	index--
 	if index >= 0 {
-		_, iEnd := l.GetInterval(index)
+		_, iEnd := l.Interval(index)
 		if p < iEnd {
 			return index
 		}
@@ -119,12 +119,12 @@ func IndexOf(l RList, p uint64) int {
 }
 
 func FindStart(l RList, at int, start uint64) bool {
-	_, iEnd := l.GetInterval(at)
+	_, iEnd := l.Interval(at)
 	return start < iEnd
 }
 
 func FindEnd(l RList, at int, end uint64) bool {
-	iStart, _ := l.GetInterval(at)
+	iStart, _ := l.Interval(at)
 	return end <= iStart
 }
 
@@ -153,9 +153,9 @@ func (s *intersection) intersect(l RList, start, end uint64) {
 	s.intersectsLow = false
 	s.intersectsHigh = false
 	if s.overlap > 0 {
-		s.lowStart, s.lowEnd = l.GetInterval(s.lowIndex)
+		s.lowStart, s.lowEnd = l.Interval(s.lowIndex)
 		s.intersectsLow = s.lowStart < start
-		s.highStart, s.highEnd = l.GetInterval(s.highIndex)
+		s.highStart, s.highEnd = l.Interval(s.highIndex)
 		s.intersectsHigh = end < s.highEnd
 	}
 }

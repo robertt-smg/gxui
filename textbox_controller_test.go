@@ -76,16 +76,16 @@ func TestParseTBCSelections(t *testing.T) {
 	test.AssertEquals(t, "hello\nworld", c.Text())
 	test.AssertEquals(t, 2, c.LineCount())
 	test.AssertEquals(t, 3, c.SelectionCount())
-	test.AssertEquals(t, TextSelection{2, 5, true}, c.Selection(0))
-	test.AssertEquals(t, TextSelection{6, 6, false}, c.Selection(1))
-	test.AssertEquals(t, TextSelection{9, 11, false}, c.Selection(2))
+	test.AssertEquals(t, CreateTextSelection(2, 5, true), c.Selection(0))
+	test.AssertEquals(t, CreateTextSelection(6, 6, false), c.Selection(1))
+	test.AssertEquals(t, CreateTextSelection(9, 11, false), c.Selection(2))
 }
 
 func TestTBCWordAt(t *testing.T) {
 	check := func(str, expected string) {
 		c := parseTBC(str)
 		s, e := c.WordAt(c.FirstCaret())
-		c.SetSelection(TextSelection{s, e, false})
+		c.SetSelection(CreateTextSelection(s, e, false))
 		assertTBCTextAndSelectionsEqual(t, expected, c)
 	}
 	check("abc.dE|f()", "abc.{dEf]()")

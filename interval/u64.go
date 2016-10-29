@@ -114,7 +114,7 @@ func (l U64List) Copy(to, from, count int) {
 	copy(l[to:to+count], l[from:from+count])
 }
 
-func (l U64List) GetInterval(index int) (start, end uint64) {
+func (l U64List) Interval(index int) (start, end uint64) {
 	return l[index].Span()
 }
 
