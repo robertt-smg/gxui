@@ -68,6 +68,7 @@ func (t *TextBoxController) updateSelectionsForEdits(edits []TextBoxEdit) {
 		}
 		selection.start = math.Clamp(selection.start, min, max)
 		selection.end = math.Clamp(selection.end, min, max)
+		selection = selection.Store()
 		interval.Merge(&selections, selection)
 	}
 	t.selections = selections
@@ -331,6 +332,7 @@ func (t *TextBoxController) IndexDown(sel TextSelection) TextSelection {
 	return sel
 }
 
+// TODO: figure out why pressing down at the end of the file goes back one character
 func (t *TextBoxController) indexDown(i, stored int) int {
 	line := t.LineIndex(i)
 	storedLine := t.LineIndex(stored)
