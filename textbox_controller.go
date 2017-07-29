@@ -544,21 +544,24 @@ func (t *TextBoxController) Backspace() {
 	t.SetTextEdits(text, edits)
 }
 
-func (t *TextBoxController) ReplaceAll(str string) {
-	t.Replace(func(TextSelection) string { return str })
+func (t *TextBoxController) ReplaceAll(str string) []TextBoxEdit {
+	return t.Replace(func(TextSelection) string { return str })
 }
 
-func (t *TextBoxController) ReplaceAllRunes(str []rune) {
-	t.ReplaceRunes(func(TextSelection) []rune { return str })
+func (t *TextBoxController) ReplaceAllRunes(str []rune) []TextBoxEdit {
+	return t.ReplaceRunes(func(TextSelection) []rune { return str })
 }
 
-func (t *TextBoxController) Replace(f func(sel TextSelection) string) {
-	t.ReplaceRunes(func(s TextSelection) []rune { return StringToRuneArray(f(s)) })
+func (t *TextBoxController) Replace(f func(sel TextSelection) string) []TextBoxEdit {
+	return t.ReplaceRunes(func(s TextSelection) []rune { return StringToRuneArray(f(s)) })
 }
 
-func (t *TextBoxController) ReplaceRunes(f func(sel TextSelection) []rune) {
+func (t *TextBoxController) ReplaceRunes(f func(sel TextSelection) []rune) (edits []TextBoxEdit) {
 	t.maybeStoreCaretLocations()
-	text, edit, edits := t.text, TextBoxEdit{}, []TextBoxEdit{}
+	var (
+		text = t.text
+		edit TextBoxEdit
+	)
 	for i := len(t.selections) - 1; i >= 0; i-- {
 		s := t.selections[i]
 		text, edit = t.ReplaceAt(text, s.start, s.end, f(s))
@@ -566,6 +569,7 @@ func (t *TextBoxController) ReplaceRunes(f func(sel TextSelection) []rune) {
 	}
 	t.setTextRunesNoEvent(text)
 	t.textEdited(edits)
+	return edits
 }
 
 func (t *TextBoxController) ReplaceAt(text []rune, s, e int, replacement []rune) ([]rune, TextBoxEdit) {
