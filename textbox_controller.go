@@ -340,7 +340,7 @@ func (t *TextBoxController) indexDown(i, stored int) int {
 	if line < t.LineCount()-1 {
 		return math.Min(t.LineStart(line+1)+x, t.LineEnd(line+1))
 	}
-	return len(t.text) - 1
+	return math.Max(len(t.text) - 1,0)
 }
 
 func (t *TextBoxController) IndexHome(sel TextSelection) TextSelection {
