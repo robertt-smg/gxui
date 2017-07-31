@@ -40,7 +40,7 @@ func CreateTextBoxController() *TextBoxController {
 	return t
 }
 
-func (t *TextBoxController) textEdited(edits []TextBoxEdit) {
+func (t *TextBoxController) TextEdited(edits []TextBoxEdit) {
 	t.updateSelectionsForEdits(edits)
 	t.onTextChanged.Fire(edits)
 }
@@ -239,12 +239,12 @@ func (t *TextBoxController) SetText(str string) {
 
 func (t *TextBoxController) SetTextRunes(text []rune) {
 	t.setTextRunesNoEvent(text)
-	t.textEdited([]TextBoxEdit{})
+	t.TextEdited([]TextBoxEdit{})
 }
 
 func (t *TextBoxController) SetTextEdits(text []rune, edits []TextBoxEdit) {
 	t.setTextRunesNoEvent(text)
-	t.textEdited(edits)
+	t.TextEdited(edits)
 }
 
 func (t *TextBoxController) IndexFirst(sel TextSelection) TextSelection {
@@ -340,7 +340,7 @@ func (t *TextBoxController) indexDown(i, stored int) int {
 	if line < t.LineCount()-1 {
 		return math.Min(t.LineStart(line+1)+x, t.LineEnd(line+1))
 	}
-	return math.Max(len(t.text) - 1,0)
+	return math.Max(len(t.text)-1, 0)
 }
 
 func (t *TextBoxController) IndexHome(sel TextSelection) TextSelection {
@@ -568,7 +568,7 @@ func (t *TextBoxController) ReplaceRunes(f func(sel TextSelection) []rune) (edit
 		edits = append(edits, edit)
 	}
 	t.setTextRunesNoEvent(text)
-	t.textEdited(edits)
+	t.TextEdited(edits)
 	return edits
 }
 
