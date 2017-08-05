@@ -26,11 +26,17 @@ func (d *driver) discoverUIGoRoutine() {
 	panic("applicationLoop was not found in the callstack")
 }
 
-func (d *driver) AssertUIGoroutine() {
+func (d *driver) isUIGoroutine() bool {
 	for _, pc := range d.pcs[:runtime.Callers(2, d.pcs)] {
 		if pc == d.uiPC {
-			return
+			return true
 		}
 	}
-	panic("AssertUIGoroutine called on a go-routine that was not the UI go-routine")
+	return false
+}
+
+func (d *driver) AssertUIGoroutine() {
+	if !d.isUIGoroutine() {
+		panic("AssertUIGoroutine called on a go-routine that was not the UI go-routine")
+	}
 }

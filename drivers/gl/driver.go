@@ -125,6 +125,10 @@ func (d *driver) Call(f func()) bool {
 }
 
 func (d *driver) CallSync(f func()) bool {
+	if d.isUIGoroutine() {
+		f()
+		return true
+	}
 	c := make(chan struct{})
 	if d.Call(func() { f(); close(c) }) {
 		<-c
