@@ -209,6 +209,9 @@ func (t *TextBoxController) LineEnd(i int) int {
 func (t *TextBoxController) LineIndent(lineIndex int) int {
 	line := t.Line(lineIndex)
 	indentLen := len(t.Indent())
+	if indentLen == 0 {
+		return 0
+	}
 	i := 0
 	for ; (i+1)*indentLen < len(line) && line[i*indentLen:(i+1)*indentLen] == t.Indent(); i++ {
 	}
