@@ -74,7 +74,7 @@ func (t *TextBoxController) updateSelectionsForEdits(edits []TextBoxEdit) {
 	t.selections = selections
 }
 
-func (t *TextBoxController) setTextRunesNoEvent(text []rune) {
+func (t *TextBoxController) SetTextRunesNoEvent(text []rune) {
 	t.text = text
 	t.lineStarts = t.lineStarts[:0]
 	t.lineEnds = t.lineEnds[:0]
@@ -241,12 +241,12 @@ func (t *TextBoxController) SetText(str string) {
 }
 
 func (t *TextBoxController) SetTextRunes(text []rune) {
-	t.setTextRunesNoEvent(text)
+	t.SetTextRunesNoEvent(text)
 	t.TextEdited([]TextBoxEdit{})
 }
 
 func (t *TextBoxController) SetTextEdits(text []rune, edits []TextBoxEdit) {
-	t.setTextRunesNoEvent(text)
+	t.SetTextRunesNoEvent(text)
 	t.TextEdited(edits)
 }
 
@@ -570,7 +570,7 @@ func (t *TextBoxController) ReplaceRunes(f func(sel TextSelection) []rune) (edit
 		text, edit = t.ReplaceAt(text, s.start, s.end, f(s))
 		edits = append(edits, edit)
 	}
-	t.setTextRunesNoEvent(text)
+	t.SetTextRunesNoEvent(text)
 	t.TextEdited(edits)
 	return edits
 }
