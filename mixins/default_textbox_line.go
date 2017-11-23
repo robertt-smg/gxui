@@ -9,6 +9,8 @@ import (
 	"github.com/nelsam/gxui/interval"
 	"github.com/nelsam/gxui/math"
 	"github.com/nelsam/gxui/mixins/base"
+
+	"unicode/utf8"
 )
 
 type DefaultTextBoxLineOuter interface {
@@ -150,7 +152,8 @@ func (t *DefaultTextBoxLine) RuneIndexAt(p math.Point) int {
 	x := p.X
 	line := controller.Line(t.lineIndex)
 	i := 0
-	for ; i < len(line) && x > font.Measure(&gxui.TextBlock{Runes: []rune(line[:i+1])}).W; i++ {
+	count := utf8.RuneCountInString(line)
+	for ; i < count && x > font.Measure(&gxui.TextBlock{Runes: []rune(line[:i+1])}).W; i++ {
 	}
 
 	return controller.LineStart(t.lineIndex) + i
