@@ -64,7 +64,10 @@ func (l *SplitterLayout) LayoutChildren() {
 		var cr math.Rect
 		if isSplitter := (i & 1) == 1; !isSplitter {
 			cm := c.Control.Margin()
-			frac := l.weights[c.Control] / netWeight
+			var frac float32 = 1
+			if netWeight > 0 {
+				frac = l.weights[c.Control] / netWeight
+			}
 			if l.orientation.Horizontal() {
 				cw := int(float32(s.W) * frac)
 				cr = math.CreateRect(d+cm.L, cm.T, d+cw-cm.R, s.H-cm.B)
