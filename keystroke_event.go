@@ -8,3 +8,7 @@ type KeyStrokeEvent struct {
 	Character rune
 	Modifier  KeyboardModifier
 }
+
+func (e KeyStrokeEvent) String() string {
+	return concat(e.Modifier.String(), string(e.Character))
+}

@@ -8,3 +8,7 @@ type KeyboardEvent struct {
 	Key      KeyboardKey
 	Modifier KeyboardModifier
 }
+
+func (e KeyboardEvent) String() string {
+	return concat(e.Modifier.String(), e.Key.String())
+}

@@ -29,3 +29,27 @@ func (m KeyboardModifier) Alt() bool {
 func (m KeyboardModifier) Super() bool {
 	return m&ModSuper != 0
 }
+
+func (m KeyboardModifier) String() string {
+	var ev string
+	if m.Control() {
+		ev = concat(ev, "Ctrl")
+	}
+	if m.Super() {
+		ev = concat(ev, platformSuper)
+	}
+	if m.Shift() {
+		ev = concat(ev, "Shift")
+	}
+	if m.Alt() {
+		ev = concat(ev, "Alt")
+	}
+	return ev
+}
+
+func concat(root, add string) string {
+	if root != "" {
+		root += "-"
+	}
+	return root + add
+}
