@@ -554,7 +554,12 @@ func (t *TextBox) MouseMove(ev gxui.MouseEvent) {
 	t.List.MouseMove(ev)
 	if t.selectionDragging {
 		if p, ok := t.RuneIndexAt(ev.Point); ok {
-			t.selectionDrag = gxui.CreateTextSelection(t.selectionDrag.From(), p, false)
+			from := t.selectionDrag.From()
+			if from < p {
+				t.selectionDrag = gxui.CreateTextSelection(from, p, false)
+			} else {
+				t.selectionDrag = gxui.CreateTextSelection(p, t.selectionDrag.End(), false)
+			}
 			t.selectionDragging = true
 			t.onRedrawLines.Fire()
 		}
