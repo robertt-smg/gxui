@@ -136,34 +136,60 @@ func (l *CodeEditorLine) PaintEditorCarets(c gxui.Canvas, info CodeEditorLinePai
 	}
 }
 
-func (l *CodeEditorLine) PaintEditorSelections(c gxui.Canvas, info CodeEditorLinePaintInfo) {
-	controller := l.textbox.controller
-
-	ls, le := uint64(controller.LineStart(l.lineIndex)), uint64(controller.LineEnd(l.lineIndex))
-
-	selections := controller.Selections()
-	if l.textbox.selectionDragging {
-		interval.Replace(&selections, l.textbox.selectionDrag)
+func (l *CodeEditorLine) paintSelection(c gxui.Canvas, info CodeEditorLinePaintInfo, first, last int) {
+	var startOffset, endOffset math.Point
+	if first >= len(info.GlyphOffsets) {
+		first = len(info.GlyphOffsets) - 1
 	}
-	interval.Visit(&selections, gxui.CreateTextSelection(int(ls), int(le), false), func(s, e uint64, _ int) {
-		if s < e {
-			var startOffset math.Point
-			if s > ls {
-				startOffset = l.endOfChar(info.GlyphOffsets[s-ls-1])
-			}
-			var endOffset math.Point
-			if e > ls {
-				endOffset = l.endOfChar(info.GlyphOffsets[e-ls-1])
-			}
+	if first > 0 {
+		startOffset = l.endOfChar(info.GlyphOffsets[first-1])
+	}
+	if last >= len(info.GlyphOffsets) {
+		last = len(info.GlyphOffsets) - 1
+	}
+	endOffset = l.endOfChar(info.GlyphOffsets[last])
 
-			width := endOffset.X - startOffset.X
-			m := l.outer.MeasureRunes(int(s), int(e))
-			m.W = width
-			top := math.Point{X: l.caretWidth + startOffset.X, Y: 0}
-			bottom := top.Add(m.Point())
-			l.outer.PaintSelection(c, top, bottom)
+	width := endOffset.X - startOffset.X
+	m := l.outer.MeasureRunes(first, last)
+	m.W = width
+	top := math.Point{X: l.caretWidth + startOffset.X}
+	bottom := top.Add(m.Point())
+	l.outer.PaintSelection(c, top, bottom)
+}
+
+func (l *CodeEditorLine) PaintEditorSelections(c gxui.Canvas, info CodeEditorLinePaintInfo) {
+	if len(info.GlyphOffsets) == 0 {
+		return
+	}
+
+	controller := l.textbox.controller
+	ls, le := controller.LineStart(l.lineIndex), controller.LineEnd(l.lineIndex)
+	selections := controller.Selections()
+
+	selections = l.addDragging(selections)
+	for _, s := range selections {
+		start := s.Start()
+		end := s.End()
+		if start == end {
+			continue
 		}
-	})
+		if start > end {
+			start, end = end, start
+		}
+		if end <= ls || start >= le {
+			continue
+		}
+		if start <= ls && end > le {
+			l.paintSelection(c, info, 0, le-ls)
+			return
+		}
+		start -= ls
+		if start < 0 {
+			start = 0
+		}
+		end -= ls
+		l.paintSelection(c, info, start, end-1)
+	}
 }
 
 func (l *CodeEditorLine) offsets(font gxui.Font) []math.Point {

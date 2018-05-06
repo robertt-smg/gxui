@@ -6,7 +6,6 @@ package mixins
 
 import (
 	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/interval"
 	"github.com/nelsam/gxui/math"
 	"github.com/nelsam/gxui/mixins/base"
 
@@ -114,24 +113,59 @@ func (t *DefaultTextBoxLine) PaintCarets(c gxui.Canvas) {
 	}
 }
 
+func (t *DefaultTextBoxLine) addDragging(selections []gxui.TextSelection) []gxui.TextSelection {
+	if !t.textbox.selectionDragging {
+		return selections
+	}
+	var i int
+	for i = range selections {
+		if selections[i].Start() > t.textbox.selectionDrag.Start() {
+			break
+		}
+	}
+	selections = append(selections, gxui.TextSelection{})
+	copy(selections[i+1:], selections[i:len(selections)-2])
+	selections[i] = t.textbox.selectionDrag
+	return selections
+}
+
+func (t *DefaultTextBoxLine) paintSelection(c gxui.Canvas, ls, le, first, last int) {
+	if first >= last {
+		return
+	}
+	x := t.outer.MeasureRunes(ls, ls+first).W
+	m := t.outer.MeasureRunes(ls+first, ls+last)
+	top := math.Point{X: t.caretWidth + x}
+	bottom := top.Add(m.Point())
+	t.outer.PaintSelection(c, top, bottom)
+}
+
 func (t *DefaultTextBoxLine) PaintSelections(c gxui.Canvas) {
 	controller := t.textbox.controller
 
 	ls, le := controller.LineStart(t.lineIndex), controller.LineEnd(t.lineIndex)
 
-	selections := controller.Selections()
-	if t.textbox.selectionDragging {
-		interval.Replace(&selections, t.textbox.selectionDrag)
-	}
-	interval.Visit(&selections, gxui.CreateTextSelection(ls, le, false), func(s, e uint64, _ int) {
-		if s < e {
-			x := t.outer.MeasureRunes(ls, int(s)).W
-			m := t.outer.MeasureRunes(int(s), int(e))
-			top := math.Point{X: t.caretWidth + x, Y: 0}
-			bottom := top.Add(m.Point())
-			t.outer.PaintSelection(c, top, bottom)
+	selections := t.addDragging(controller.Selections())
+	for _, s := range selections {
+		start := s.Start()
+		end := s.End()
+		if start > end {
+			start, end = end, start
 		}
-	})
+		if end <= ls {
+			continue
+		}
+		if start <= ls && end > le {
+			t.paintSelection(c, ls, le, 0, le-ls)
+			return
+		}
+		start -= ls
+		if start < 0 {
+			start = 0
+		}
+		end -= ls
+		t.paintSelection(c, ls, le, start, end)
+	}
 }
 
 func (t *DefaultTextBoxLine) PaintCaret(c gxui.Canvas, top, bottom math.Point) {

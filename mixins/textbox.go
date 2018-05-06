@@ -25,6 +25,12 @@ type TextBoxOuter interface {
 	CreateLine(theme gxui.Theme, index int) (line TextBoxLine, container gxui.Control)
 }
 
+// TextBox is a mixin for text boxes.  It is not guaranteed to be goroutine-safe, but
+// simple accessors to the underlying text is controlled by gxui.TextBoxController,
+// which is itself goroutine-safe.
+//
+// It's encouraged to develop with the driver in debug mode so that functions that must
+// be called on the UI goroutine will panic if they are called on non-UI goroutines.
 type TextBox struct {
 	List
 	gxui.AdapterBase
@@ -286,7 +292,7 @@ func (t *TextBox) StartOffset() int {
 	return t.startOffset
 }
 
-func (t *TextBox) Select(sel gxui.TextSelectionList) {
+func (t *TextBox) Select(sel []gxui.TextSelection) {
 	t.controller.StoreCaretLocations()
 	t.controller.SetSelections(sel)
 	// Use two scroll tos to try and display all selections (if it fits on screen)

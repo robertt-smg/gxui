@@ -27,7 +27,7 @@ type TextBox interface {
 	StartOffset() int
 	TextColor() Color
 	SetTextColor(Color)
-	Select(TextSelectionList)
+	Select([]TextSelection)
 	SelectAll()
 	Carets() []int
 	RuneIndexAt(p math.Point) (idx int, found bool)

@@ -25,6 +25,27 @@ func init() {
 	runtime.LockOSThread()
 }
 
+// An Opt is a type which modifies the Driver, usually during setup.
+type Opt interface {
+	Apply(gxui.Driver) gxui.Driver
+}
+
+// An OptFunc is an Opt that doesn't carry any state.
+type OptFunc func(gxui.Driver) gxui.Driver
+
+// Apply implements Opt.
+func (f OptFunc) Apply(d gxui.Driver) gxui.Driver {
+	return f(d)
+}
+
+// Debug is an Opt that sets d to debug mode (so that d.Debug() == true).
+func Debug() Opt {
+	return OptFunc(func(d gxui.Driver) gxui.Driver {
+		d.(*driver).debug = true
+		return d
+	})
+}
+
 type driver struct {
 	pendingDriver *CallQueue
 	pendingApp    *CallQueue
@@ -33,10 +54,12 @@ type driver struct {
 
 	pcs  []uintptr // reusable scratch-buffer for use by runtime.Callers.
 	uiPC uintptr   // the program-counter of the applicationLoop function.
+
+	debug bool
 }
 
 // StartDriver starts the gl driver with the given appRoutine.
-func StartDriver(appRoutine func(driver gxui.Driver)) {
+func StartDriver(appRoutine func(driver gxui.Driver), opts ...Opt) {
 	if runtime.GOMAXPROCS(-1) < 2 {
 		runtime.GOMAXPROCS(2)
 	}
@@ -46,17 +69,24 @@ func StartDriver(appRoutine func(driver gxui.Driver)) {
 	}
 	defer glfw.Terminate()
 
-	driver := &driver{
+	d := &driver{
 		pendingDriver: NewCallQueue(),
 		pendingApp:    NewCallQueue(),
 		viewports:     list.New(),
 		pcs:           make([]uintptr, 256),
 	}
+	for _, opt := range opts {
+		d = opt.Apply(d).(*driver)
+	}
 
-	driver.pendingApp.Inject(driver.discoverUIGoRoutine)
-	driver.pendingApp.Inject(func() { appRoutine(driver) })
-	go driver.applicationLoop()
-	driver.driverLoop()
+	d.pendingApp.Inject(d.discoverUIGoRoutine)
+	d.pendingApp.Inject(func() { appRoutine(d) })
+	go d.applicationLoop()
+	d.driverLoop()
+}
+
+func (d *driver) Debug() bool {
+	return d.debug
 }
 
 func (d *driver) asyncDriver(f func()) {
