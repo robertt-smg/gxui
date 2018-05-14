@@ -35,7 +35,12 @@ func (d *driver) isUIGoroutine() bool {
 	return false
 }
 
+// AssertUIGoroutine will panic if d.Debug() == true *and* it is
+// called from a goroutine that is not the UI goroutine.
 func (d *driver) AssertUIGoroutine() {
+	if !d.Debug() {
+		return
+	}
 	if !d.isUIGoroutine() {
 		panic("AssertUIGoroutine called on a go-routine that was not the UI go-routine")
 	}

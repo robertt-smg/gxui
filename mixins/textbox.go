@@ -5,6 +5,8 @@
 package mixins
 
 import (
+	"log"
+	"runtime/debug"
 	"strings"
 
 	"github.com/nelsam/gxui"
@@ -25,6 +27,12 @@ type TextBoxOuter interface {
 	CreateLine(theme gxui.Theme, index int) (line TextBoxLine, container gxui.Control)
 }
 
+// TextBox is a mixin for text boxes.  It is not guaranteed to be goroutine-safe, but
+// simple accessors to the underlying text is controlled by gxui.TextBoxController,
+// which is itself goroutine-safe.
+//
+// It's encouraged to develop with the driver in debug mode so that functions that must
+// be called on the UI goroutine will panic if they are called on non-UI goroutines.
 type TextBox struct {
 	List
 	gxui.AdapterBase
@@ -287,6 +295,15 @@ func (t *TextBox) StartOffset() int {
 }
 
 func (t *TextBox) Select(sel gxui.TextSelectionList) {
+	log.Printf("DEPRECATION WARNING: gxui.TextSelectionList is going away!  " +
+		"Please update your code to pass in a []gxui.TextSelection instead.  " +
+		"We are temporarily providing a TextBox.SelectSlice([]gxui.TextSelection) " +
+		"method for a transitionary period.")
+	debug.PrintStack()
+	t.SelectSlice(sel)
+}
+
+func (t *TextBox) SelectSlice(sel []gxui.TextSelection) {
 	t.controller.StoreCaretLocations()
 	t.controller.SetSelections(sel)
 	// Use two scroll tos to try and display all selections (if it fits on screen)

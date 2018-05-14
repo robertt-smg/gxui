@@ -13,11 +13,11 @@ func TestCallQueue_Closed(t *testing.T) {
 
 	call, ok := c.Pop()
 	if call != nil || ok {
-		t.Errorf("Expected (nil, false) from c.Pop; got (%v, %v)", call, ok)
+		t.Errorf("Expected (nil, false) from c.Pop; got (%T, %v)", call, ok)
 	}
 	call, ok = c.PopWhenReady()
 	if call != nil || ok {
-		t.Errorf("Expected (nil, false) from c.Pop; got (%v, %v)", call, ok)
+		t.Errorf("Expected (nil, false) from c.Pop; got (%T, %v)", call, ok)
 	}
 }
 
@@ -27,7 +27,7 @@ func TestCallQueue_Empty(t *testing.T) {
 
 	call, ok := c.Pop()
 	if call != nil || !ok {
-		t.Errorf("Expected (nil, true) from c.Pop; got (%v, %v)", call, ok)
+		t.Errorf("Expected (nil, true) from c.Pop; got (%T, %v)", call, ok)
 	}
 
 	done := make(chan struct{})
@@ -50,7 +50,7 @@ func TestCallQueue_Simple(t *testing.T) {
 	c.Inject(func() { close(called) })
 	call, ok := c.Pop()
 	if !ok || call == nil {
-		t.Errorf("Expected (non-nil, true) from c.Pop; got (%v, %v)", call, ok)
+		t.Errorf("Expected (non-nil, true) from c.Pop; got (%T, %v)", call, ok)
 	}
 	call()
 	select {
@@ -74,7 +74,7 @@ func TestCallQueue_Simple(t *testing.T) {
 	}
 
 	if call == nil || !ok {
-		t.Errorf("Expected (non-nil, true) from c.PopWhenReady; got (%v, %v)", call, ok)
+		t.Errorf("Expected (non-nil, true) from c.PopWhenReady; got (%T, %v)", call, ok)
 		t.FailNow()
 	}
 	call()

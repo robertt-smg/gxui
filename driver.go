@@ -11,6 +11,9 @@ import (
 )
 
 type Driver interface {
+	// Debug returns whether or not the Driver has been set to debug mode.
+	Debug() bool
+
 	// Call queues f to be run on the UI go-routine, returning before f may have
 	// been called. Call returns false if the driver has been terminated, in which
 	// case f may not be called.
@@ -41,7 +44,7 @@ type Driver interface {
 	CreateTexture(img image.Image, pixelsPerDip float32) Texture
 
 	// Debug function used to verify that the caller is executing on the UI
-	// go-routine. If the caller is not on the UI go-routine then the function
-	// panics.
+	// goroutine.  If this method is called outside of the UI goroutine
+	// *and* Debug() == true, then it will panic; otherwise it does nothing.
 	AssertUIGoroutine()
 }
