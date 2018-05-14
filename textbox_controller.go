@@ -6,6 +6,8 @@ package gxui
 
 import (
 	"fmt"
+	"log"
+	"runtime/debug"
 	"sort"
 	"strings"
 	"unicode"
@@ -174,7 +176,17 @@ func (t *TextBoxController) Selection(i int) TextSelection {
 	return t.selections()[i]
 }
 
-func (t *TextBoxController) Selections() []TextSelection {
+func (t *TextBoxController) Selections() TextSelectionList {
+	log.Printf("DEPRECATION WARNING: TextSelectionList is going away!  " +
+		"Please update your code to treat the return value of Selections() " +
+		"as a []gxui.TextSelection instead.  We are providing a " +
+		"TextBoxController.SelectionSlice() []gxui.TextSelection method for " +
+		"a transitionary period.  Stack:")
+	debug.PrintStack()
+	return t.SelectionSlice()
+}
+
+func (t *TextBoxController) SelectionSlice() []TextSelection {
 	return t.selections()
 }
 

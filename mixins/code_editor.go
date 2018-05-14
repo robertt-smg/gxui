@@ -171,7 +171,7 @@ func (e *CodeEditor) KeyPress(ev gxui.KeyboardEvent) (consume bool) {
 	switch ev.Key {
 	case gxui.KeyTab:
 		replace := true
-		for _, sel := range e.controller.Selections() {
+		for _, sel := range e.controller.SelectionSlice() {
 			start, end := sel.Range()
 			if e.controller.LineIndex(start) != e.controller.LineIndex(end) {
 				replace = false

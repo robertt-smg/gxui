@@ -164,7 +164,7 @@ func (l *CodeEditorLine) PaintEditorSelections(c gxui.Canvas, info CodeEditorLin
 
 	controller := l.textbox.controller
 	ls, le := controller.LineStart(l.lineIndex), controller.LineEnd(l.lineIndex)
-	selections := controller.Selections()
+	selections := controller.SelectionSlice()
 
 	selections = l.addDragging(selections)
 	for _, s := range selections {

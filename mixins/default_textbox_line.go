@@ -145,7 +145,7 @@ func (t *DefaultTextBoxLine) PaintSelections(c gxui.Canvas) {
 
 	ls, le := controller.LineStart(t.lineIndex), controller.LineEnd(t.lineIndex)
 
-	selections := t.addDragging(controller.Selections())
+	selections := t.addDragging(controller.SelectionSlice())
 	for _, s := range selections {
 		start := s.Start()
 		end := s.End()

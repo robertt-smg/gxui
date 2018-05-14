@@ -5,6 +5,8 @@
 package mixins
 
 import (
+	"log"
+	"runtime/debug"
 	"strings"
 
 	"github.com/nelsam/gxui"
@@ -292,7 +294,16 @@ func (t *TextBox) StartOffset() int {
 	return t.startOffset
 }
 
-func (t *TextBox) Select(sel []gxui.TextSelection) {
+func (t *TextBox) Select(sel gxui.TextSelectionList) {
+	log.Printf("DEPRECATION WARNING: gxui.TextSelectionList is going away!  " +
+		"Please update your code to pass in a []gxui.TextSelection instead.  " +
+		"We are temporarily providing a TextBox.SelectSlice([]gxui.TextSelection) " +
+		"method for a transitionary period.")
+	debug.PrintStack()
+	t.SelectSlice(sel)
+}
+
+func (t *TextBox) SelectSlice(sel []gxui.TextSelection) {
 	t.controller.StoreCaretLocations()
 	t.controller.SetSelections(sel)
 	// Use two scroll tos to try and display all selections (if it fits on screen)
