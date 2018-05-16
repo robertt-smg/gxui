@@ -149,10 +149,13 @@ func (t *DefaultTextBoxLine) PaintSelections(c gxui.Canvas) {
 	for _, s := range selections {
 		start := s.Start()
 		end := s.End()
+		if start == end {
+			continue
+		}
 		if start > end {
 			start, end = end, start
 		}
-		if end <= ls {
+		if end <= ls || start >= le {
 			continue
 		}
 		if start <= ls && end > le {
