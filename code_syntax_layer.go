@@ -25,7 +25,7 @@ func (l *CodeSyntaxLayer) Clear() {
 
 func (l *CodeSyntaxLayer) UpdateSpans(runeCount int, edits []TextBoxEdit) {
 	if l == nil {
-		continue
+		return
 	}
 	min := 0
 	max := runeCount
