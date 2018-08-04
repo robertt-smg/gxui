@@ -585,6 +585,25 @@ func (t *TextBox) MouseMove(ev gxui.MouseEvent) {
 			} else {
 				t.selectionDrag = gxui.CreateTextSelection(p, t.selectionDrag.End(), false)
 			}
+			lineIndex := t.controller.LineIndex(p)
+			size := t.Size()
+			lineOffset := t.lineWidthOffset()
+			padding := t.Padding()
+			horizStart := t.horizOffset
+			horizEnd := t.horizOffset + size.W - padding.W() - lineOffset
+			line, _ := t.outer.CreateLine(t.theme, lineIndex)
+			pos := line.PositionAt(p)
+
+			from, to := t.horizScroll.ScrollPosition()
+			L := to - from
+			delta := 10
+			if (pos.X - horizStart) < delta {
+				from = math.Max(0, pos.X-L/2)
+				t.horizScroll.SetScrollPosition(from, from+L)
+			} else if (horizEnd - pos.X) < delta {
+				to = math.Min(t.horizScroll.ScrollLimit(), pos.X+L/2)
+				t.horizScroll.SetScrollPosition(to-L, to)
+			}
 			t.selectionDragging = true
 			t.onRedrawLines.Fire()
 		}
