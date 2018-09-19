@@ -314,6 +314,12 @@ func (t *TextBox) StartOffset() int {
 	return t.startOffset
 }
 
+func (t *TextBox) SelectionPoint() math.Point {
+	t.selectionMu.Lock()
+	defer t.selectionMu.Unlock()
+	return t.selectionPoint
+}
+
 func (t *TextBox) Select(sel gxui.TextSelectionList) {
 	log.Printf("DEPRECATION WARNING: gxui.TextSelectionList is going away!  " +
 		"Please update your code to pass in a []gxui.TextSelection instead.  " +
@@ -606,9 +612,7 @@ func (t *TextBox) runSelectionScroller(ctx context.Context, freq time.Duration, 
 
 		from, to := t.horizScroll.ScrollPosition()
 		width := to - from
-		t.selectionMu.Lock()
-		point := t.selectionPoint
-		t.selectionMu.Unlock()
+		point := t.SelectionPoint()
 		var rate int
 		if point.X < edge && from > 0 {
 			rate = (edge - point.X) * rateMult
