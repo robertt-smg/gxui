@@ -5,9 +5,12 @@
 package mixins
 
 import (
+	"context"
 	"log"
 	"runtime/debug"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/nelsam/gxui"
 	"github.com/nelsam/gxui/math"
@@ -56,6 +59,10 @@ type TextBox struct {
 	horizOffset      int
 	horizScrollES    gxui.EventSubscription
 	maxLineWidth     int
+
+	stopScrolling  func()
+	selectionPoint math.Point
+	selectionMu    sync.Mutex
 }
 
 func (t *TextBox) lineMouseDown(line TextBoxLine, ev gxui.MouseEvent) {
@@ -74,6 +81,10 @@ func (t *TextBox) lineMouseUp(line TextBoxLine, ev gxui.MouseEvent) {
 	if ev.Button == gxui.MouseButtonLeft {
 		t.startOffset = math.Min(t.startOffset, t.List.ScrollOffset())
 		t.selectionDragging = false
+		if t.stopScrolling != nil {
+			t.stopScrolling()
+			t.stopScrolling = nil
+		}
 		if !ev.Modifier.Control() {
 			t.controller.SetSelection(t.selectionDrag)
 		} else {
@@ -301,6 +312,12 @@ func (t *TextBox) SetDesiredWidth(desiredWidth int) {
 
 func (t *TextBox) StartOffset() int {
 	return t.startOffset
+}
+
+func (t *TextBox) SelectionPoint() math.Point {
+	t.selectionMu.Lock()
+	defer t.selectionMu.Unlock()
+	return t.selectionPoint
 }
 
 func (t *TextBox) Select(sel gxui.TextSelectionList) {
@@ -583,20 +600,75 @@ func (t *TextBox) DoubleClick(ev gxui.MouseEvent) (consume bool) {
 	return true
 }
 
+func (t *TextBox) runSelectionScroller(ctx context.Context, freq time.Duration, edge, rateMult int) {
+	ticker := time.NewTicker(freq)
+	defer ticker.Stop()
+	for range ticker.C {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+
+		from, to := t.horizScroll.ScrollPosition()
+		width := to - from
+		point := t.SelectionPoint()
+		var rate int
+		if point.X < edge && from > 0 {
+			rate = (edge - point.X) * rateMult
+			from -= rate
+			to -= rate
+		} else if (width-point.X) < edge && to < t.horizScroll.ScrollLimit() {
+			rate = (point.X - (width - edge)) * rateMult
+			from += rate
+			to += rate
+		}
+		from = math.Clamp(from, 0, t.horizScroll.ScrollLimit())
+		to = math.Clamp(to, 0, t.horizScroll.ScrollLimit())
+		t.driver.CallSync(func() {
+			t.horizScroll.SetScrollPosition(from, to)
+		})
+	}
+}
+
+func (t *TextBox) selectionScroll(ev gxui.MouseEvent) {
+	if !t.selectionDragging {
+		return
+	}
+	t.selectionMu.Lock()
+	t.selectionPoint = ev.Point
+	t.selectionMu.Unlock()
+	p, ok := t.RuneIndexAt(ev.Point)
+	if !ok {
+		return
+	}
+	defer t.onRedrawLines.Fire()
+
+	from := t.selectionDrag.Caret()
+	if from < p {
+		t.selectionDrag = gxui.CreateTextSelection(from, p, true)
+	} else {
+		t.selectionDrag = gxui.CreateTextSelection(p, from, false)
+	}
+
+	const (
+		ScrollFreq     = 10 * time.Millisecond
+		ScrollEdge     = 80
+		ScrollRateMult = 4
+	)
+
+	if t.stopScrolling != nil {
+		return
+	}
+	ctx, stop := context.WithCancel(context.Background())
+	t.stopScrolling = stop
+
+	go t.runSelectionScroller(ctx, ScrollFreq, ScrollEdge, ScrollRateMult)
+}
+
 func (t *TextBox) MouseMove(ev gxui.MouseEvent) {
 	t.List.MouseMove(ev)
-	if t.selectionDragging {
-		if p, ok := t.RuneIndexAt(ev.Point); ok {
-			from := t.selectionDrag.Caret()
-			if from < p {
-				t.selectionDrag = gxui.CreateTextSelection(from, p, true)
-			} else {
-				t.selectionDrag = gxui.CreateTextSelection(p, from, false)
-			}
-			t.selectionDragging = true
-			t.onRedrawLines.Fire()
-		}
-	}
+	t.selectionScroll(ev)
 }
 
 func (t *TextBox) CreateLine(theme gxui.Theme, index int) (line TextBoxLine, container gxui.Control) {
