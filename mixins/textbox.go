@@ -579,7 +579,7 @@ func (t *TextBox) DoubleClick(ev gxui.MouseEvent) (consume bool) {
 	return true
 }
 
-func (t *TextBox) runSelectionScroller(ctx context.Context, freq time.Duration, edge, rateMult int) {
+func (t *TextBox) runSelectionScroller(ctx context.Context, is_vertical bool, freq time.Duration, edge, rateMult int) {
 	ticker := time.NewTicker(freq)
 	defer ticker.Stop()
 	for range ticker.C {
@@ -589,23 +589,32 @@ func (t *TextBox) runSelectionScroller(ctx context.Context, freq time.Duration, 
 		default:
 		}
 
-		from, to := t.horizScroll.ScrollPosition()
-		width := to - from
 		point := t.SelectionPoint()
 		var rate int
-		if point.X < edge && from > 0 {
-			rate = (edge - point.X) * rateMult
+		var scrl gxui.ScrollBar
+		var value int
+		if is_vertical {
+			value = point.Y
+			scrl = t.List.scrollBar
+		} else {
+			value = point.X
+			scrl = t.horizScroll
+		}
+		from, to := scrl.ScrollPosition()
+		width := to - from
+		if value < edge && from > 0 {
+			rate = (edge - value) * rateMult
 			from -= rate
 			to -= rate
-		} else if (width-point.X) < edge && to < t.horizScroll.ScrollLimit() {
-			rate = (point.X - (width - edge)) * rateMult
+		} else if (width-value) < edge && to < scrl.ScrollLimit() {
+			rate = (value - (width - edge)) * rateMult
 			from += rate
 			to += rate
 		}
-		from = math.Clamp(from, 0, t.horizScroll.ScrollLimit())
-		to = math.Clamp(to, 0, t.horizScroll.ScrollLimit())
+		from = math.Clamp(from, 0, scrl.ScrollLimit())
+		to = math.Clamp(to, 0, scrl.ScrollLimit())
 		t.driver.CallSync(func() {
-			t.horizScroll.SetScrollPosition(from, to)
+			scrl.SetScrollPosition(from, to)
 		})
 	}
 }
@@ -631,9 +640,12 @@ func (t *TextBox) selectionScroll(ev gxui.MouseEvent) {
 	}
 
 	const (
-		ScrollFreq     = 10 * time.Millisecond
-		ScrollEdge     = 80
-		ScrollRateMult = 4
+		ScrollHFreq     = 10 * time.Millisecond
+		ScrollVFreq     = 100 * time.Millisecond
+		ScrollHEdge     = 80
+		ScrollHRateMult = 4
+		ScrollVEdge     = 40
+		ScrollVRateMult = 1
 	)
 
 	if t.stopScrolling != nil {
@@ -642,7 +654,8 @@ func (t *TextBox) selectionScroll(ev gxui.MouseEvent) {
 	ctx, stop := context.WithCancel(context.Background())
 	t.stopScrolling = stop
 
-	go t.runSelectionScroller(ctx, ScrollFreq, ScrollEdge, ScrollRateMult)
+	go t.runSelectionScroller(ctx, false, ScrollHFreq, ScrollHEdge, ScrollHRateMult)
+	go t.runSelectionScroller(ctx, true, ScrollVFreq, ScrollVEdge, ScrollVRateMult)
 }
 
 func (t *TextBox) MouseMove(ev gxui.MouseEvent) {
