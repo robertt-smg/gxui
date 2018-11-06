@@ -5,6 +5,7 @@
 package gl
 
 import (
+	"image"
 	"sync"
 	"sync/atomic"
 	"unicode"
@@ -37,6 +38,7 @@ type viewport struct {
 	sizePixels              math.Size
 	position                math.Point
 	title                   string
+	icon                    image.Image
 	pendingMouseMoveEvent   *gxui.MouseEvent
 	pendingMouseScrollEvent *gxui.MouseEvent
 	scrollAccumX            float64
@@ -365,6 +367,21 @@ func (v *viewport) SetTitle(title string) {
 	v.Unlock()
 	v.driver.asyncDriver(func() {
 		v.window.SetTitle(title)
+	})
+}
+
+func (v *viewport) Icon() image.Image {
+	v.Lock()
+	defer v.Unlock()
+	return v.icon
+}
+
+func (v *viewport) SetIcon(i image.Image) {
+	v.Lock()
+	v.icon = i
+	v.Unlock()
+	v.driver.asyncDriver(func() {
+		v.window.SetIcon([]image.Image{i})
 	})
 }
 

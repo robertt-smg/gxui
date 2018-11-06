@@ -5,6 +5,8 @@
 package mixins
 
 import (
+	"image"
+
 	"github.com/nelsam/gxui"
 	"github.com/nelsam/gxui/math"
 	"github.com/nelsam/gxui/mixins/outer"
@@ -177,6 +179,14 @@ func (w *Window) Title() string {
 
 func (w *Window) SetTitle(t string) {
 	w.viewport.SetTitle(t)
+}
+
+func (w *Window) Icon() image.Image {
+	return w.viewport.Icon()
+}
+
+func (w *Window) SetIcon(i image.Image) {
+	w.viewport.SetIcon(i)
 }
 
 func (w *Window) Scale() float32 {

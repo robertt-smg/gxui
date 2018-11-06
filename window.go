@@ -4,7 +4,11 @@
 
 package gxui
 
-import "github.com/nelsam/gxui/math"
+import (
+	"image"
+
+	"github.com/nelsam/gxui/math"
+)
 
 type Window interface {
 	Container
@@ -15,6 +19,12 @@ type Window interface {
 
 	// SetTitle changes the title of the window.
 	SetTitle(string)
+
+	// Icon returns the icon of the window.
+	Icon() image.Image
+
+	// SetIcon changes the icon of the window.
+	SetIcon(image.Image)
 
 	// Scale returns the display scaling for this window.
 	// A scale of 1 is unscaled, 2 is twice the regular scaling.

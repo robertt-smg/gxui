@@ -5,6 +5,8 @@
 package gxui
 
 import (
+	"image"
+
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/nelsam/gxui/math"
 )
@@ -34,30 +36,36 @@ type Viewport interface {
 	// Fullscreen returns true if the viewport was created full-screen.
 	Fullscreen() bool
 
-	// Title returns the title of the window.
-	// This is usually the text displayed at the top of the window.
+	// Title returns the title of the viewport.
+	// This is usually the text displayed at the top of the viewport.
 	Title() string
 
-	// SetTitle changes the title of the window.
+	// SetTitle changes the title of the viewport.
 	SetTitle(string)
 
-	// Position returns position of the window.
+	// Icon returns the icon of the viewport.
+	Icon() image.Image
+
+	// SetIcon changes the icon of the viewport.
+	SetIcon(image.Image)
+
+	// Position returns position of the viewport.
 	Position() math.Point
 
-	// SetPosition changes position of the window.
+	// SetPosition changes position of the viewport.
 	SetPosition(math.Point)
 
 	// SetCursor sets the cursor to c.
 	SetCursor(*glfw.Cursor)
 
-	// Show makes the window visible.
+	// Show makes the viewport visible.
 	Show()
 
-	// Hide makes the window invisible.
+	// Hide makes the viewport invisible.
 	Hide()
 
-	// Close destroys the window.
-	// Once the window is closed, no further calls should be made to it.
+	// Close destroys the viewport.
+	// Once the viewport is closed, no further calls should be made to it.
 	Close()
 
 	// SetCanvas changes the displayed content of the viewport to the specified
