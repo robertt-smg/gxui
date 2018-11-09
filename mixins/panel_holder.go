@@ -43,11 +43,16 @@ type PanelHolder struct {
 	tabLayout gxui.LinearLayout
 	entries   []PanelEntry
 	selected  PanelEntry
+	left      PanelTab
+	right     PanelTab
+
+	begin int
+	end   int
 }
 
 func insertIndex(holder gxui.PanelHolder, at math.Point) int {
-	count := holder.PanelCount()
-	bestIndex := count
+	count := holder.End()
+	bestIndex := count - 1
 	bestScore := float32(1e20)
 	score := func(point math.Point, index int) {
 		score := point.Sub(at).Len()
@@ -56,7 +61,7 @@ func insertIndex(holder gxui.PanelHolder, at math.Point) int {
 			bestScore = score
 		}
 	}
-	for i := 0; i < holder.PanelCount(); i++ {
+	for i := holder.Begin(); i < count; i++ {
 		tab := holder.Tab(i)
 		size := tab.Size()
 		ml := math.Point{Y: size.H / 2}
@@ -99,6 +104,21 @@ func (p *PanelHolder) Init(outer PanelHolderOuter, theme gxui.Theme) {
 
 	p.tabLayout = theme.CreateLinearLayout()
 	p.tabLayout.SetDirection(gxui.LeftToRight)
+
+	p.left = p.outer.CreatePanelTab()
+	p.left.SetText("<-")
+	p.left.OnClick(func(ev gxui.MouseEvent) {
+		p.SelectPrev()
+	})
+	p.tabLayout.AddChild(p.left)
+
+	p.right = p.outer.CreatePanelTab()
+	p.right.SetText("->")
+	p.right.OnClick(func(ev gxui.MouseEvent) {
+		p.SelectNext()
+	})
+	p.tabLayout.AddChild(p.right)
+
 	p.Container.AddChild(p.tabLayout)
 	p.SetMargin(math.Spacing{L: 1, T: 2, R: 1, B: 1})
 	p.SetMouseEventTarget(true) // For drag-drop targets
@@ -109,7 +129,6 @@ func (p *PanelHolder) Init(outer PanelHolderOuter, theme gxui.Theme) {
 
 func (p *PanelHolder) LayoutChildren() {
 	s := p.Size()
-
 	tabHeight := p.tabLayout.DesiredSize(math.ZeroSize, s).H
 	panelRect := math.CreateRect(0, tabHeight, s.W, s.H).Contract(p.Padding())
 
@@ -157,7 +176,6 @@ func (p *PanelHolder) AddPanelAt(panel gxui.Control, name string, index int) {
 		Tab:   tab,
 		MouseDownSubscription: mds,
 	}
-	p.tabLayout.AddChildAt(index, tab)
 
 	if p.selected.Panel == nil {
 		p.Select(index)
@@ -173,7 +191,6 @@ func (p *PanelHolder) RemovePanel(panel gxui.Control) {
 	entry := p.entries[index]
 	entry.MouseDownSubscription.Unlisten()
 	p.entries = append(p.entries[:index], p.entries[index+1:]...)
-	p.tabLayout.RemoveChildAt(index)
 
 	if panel == p.selected.Panel {
 		if p.PanelCount() > 0 {
@@ -189,7 +206,6 @@ func (p *PanelHolder) Select(index int) {
 		panic(fmt.Errorf("Index %d is out of bounds. Acceptable range: [%d - %d]",
 			index, -1, p.PanelCount()-1))
 	}
-
 	if p.selected.Panel != nil {
 		p.selected.Tab.SetActive(false)
 		p.Container.RemoveChild(p.selected.Panel)
@@ -203,7 +219,45 @@ func (p *PanelHolder) Select(index int) {
 
 	if p.selected.Panel != nil {
 		p.Container.AddChild(p.selected.Panel)
+		p.update()
+		for !p.isSelectedShow() {
+			if index > p.begin {
+				p.begin++
+			} else if index < p.begin {
+				p.begin--
+			} else {
+				p.update()
+				break
+			}
+			p.update()
+		}
 		p.selected.Tab.SetActive(true)
+	} else {
+		p.update()
+	}
+}
+
+func (p *PanelHolder) SelectNext() {
+	ind := p.PanelIndex(p.selected.Panel)
+	N := p.PanelCount()
+	if N != 0 {
+		ind = ind + 1
+		if ind == N {
+			ind = 0
+		}
+		p.Select(ind)
+	}
+}
+
+func (p *PanelHolder) SelectPrev() {
+	ind := p.PanelIndex(p.selected.Panel)
+	N := p.PanelCount()
+	if N != 0 {
+		ind = ind - 1
+		if ind < 0 {
+			ind = N - 1
+		}
+		p.Select(ind)
 	}
 }
 
@@ -226,4 +280,37 @@ func (p *PanelHolder) Panel(index int) gxui.Control {
 
 func (p *PanelHolder) Tab(index int) gxui.Control {
 	return p.entries[index].Tab
+}
+
+func (p *PanelHolder) Begin() int {
+	return p.begin
+}
+
+func (p *PanelHolder) End() int {
+	return p.end
+}
+
+func (p *PanelHolder) update() {
+	for len(p.tabLayout.Children()) != 2 {
+		p.tabLayout.RemoveChildAt(1)
+	}
+	p.end = p.begin
+	for i := p.begin; i < len(p.entries); i++ {
+		index := i - p.begin + 1
+		ctrl := p.Tab(i)
+		p.tabLayout.AddChildAt(index, ctrl)
+		p.end++
+		s := p.Size().W
+		ds := p.tabLayout.DesiredSize(math.ZeroSize, p.Size()).W
+		if s != 0 && s == ds {
+			p.tabLayout.RemoveChildAt(index)
+			p.end--
+			break
+		}
+	}
+}
+
+func (p *PanelHolder) isSelectedShow() bool {
+	idx := p.PanelIndex(p.selected.Panel)
+	return (idx >= p.begin && idx < p.end)
 }

@@ -10,8 +10,12 @@ type PanelHolder interface {
 	AddPanelAt(panel Control, name string, index int)
 	RemovePanel(panel Control)
 	Select(int)
+	SelectNext()
+	SelectPrev()
 	PanelCount() int
 	PanelIndex(Control) int
 	Panel(int) Control
 	Tab(int) Control
+	Begin() int
+	End() int
 }
