@@ -16,6 +16,9 @@ type PanelTab interface {
 	gxui.Control
 	SetText(string)
 	SetActive(bool)
+	SetMaxLabelLength(int)
+	LabelLength() int
+	HasFixedLength() bool
 }
 
 type PanelTabCreater interface {
@@ -288,6 +291,12 @@ func (p *PanelHolder) Begin() int {
 
 func (p *PanelHolder) End() int {
 	return p.end
+}
+
+func (p *PanelHolder) SetMaxLabelLength(length int) {
+	for _, e := range p.entries {
+		e.Tab.SetMaxLabelLength(length)
+	}
 }
 
 func (p *PanelHolder) update() {

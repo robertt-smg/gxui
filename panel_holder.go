@@ -18,4 +18,5 @@ type PanelHolder interface {
 	Tab(int) Control
 	Begin() int
 	End() int
+	SetMaxLabelLength(int)
 }

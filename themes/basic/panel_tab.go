@@ -12,8 +12,10 @@ import (
 
 type PanelTab struct {
 	mixins.Button
-	theme  *Theme
-	active bool
+	theme          *Theme
+	active         bool
+	maxLabelLength int
+	text           string
 }
 
 func CreatePanelTab(theme *Theme) mixins.PanelTab {
@@ -27,12 +29,41 @@ func CreatePanelTab(theme *Theme) mixins.PanelTab {
 	t.OnMouseUp(func(gxui.MouseEvent) { t.Redraw() })
 	t.OnGainedFocus(t.Redraw)
 	t.OnLostFocus(t.Redraw)
+	t.maxLabelLength = -1
 	return t
 }
 
 func (t *PanelTab) SetActive(active bool) {
 	t.active = active
 	t.Redraw()
+}
+
+func (t *PanelTab) SetMaxLabelLength(length int) {
+	if t.maxLabelLength != length {
+		t.maxLabelLength = length
+	}
+	t.update()
+}
+
+func (t *PanelTab) LabelLength() int {
+	return t.maxLabelLength
+}
+
+func (t *PanelTab) HasFixedLength() bool {
+	return t.maxLabelLength != -1
+}
+
+func (t *PanelTab) SetText(str string) {
+	t.text = str
+	t.update()
+}
+
+func (t *PanelTab) update() {
+	if t.maxLabelLength != -1 && t.maxLabelLength < len(t.text) {
+		t.Button.SetText(t.text[:t.maxLabelLength] + "...")
+	} else {
+		t.Button.SetText(t.text)
+	}
 }
 
 func (t *PanelTab) Paint(c gxui.Canvas) {
