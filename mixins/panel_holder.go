@@ -51,6 +51,8 @@ type PanelHolder struct {
 
 	begin int
 	end   int
+
+	switchMode gxui.SwitchMode
 }
 
 func insertIndex(holder gxui.PanelHolder, at math.Point) int {
@@ -246,6 +248,9 @@ func (p *PanelHolder) SelectNext() {
 	if N != 0 {
 		ind = ind + 1
 		if ind == N {
+			if p.switchMode == gxui.Linear {
+				return
+			}
 			ind = 0
 		}
 		p.Select(ind)
@@ -258,6 +263,9 @@ func (p *PanelHolder) SelectPrev() {
 	if N != 0 {
 		ind = ind - 1
 		if ind < 0 {
+			if p.switchMode == gxui.Linear {
+				return
+			}
 			ind = N - 1
 		}
 		p.Select(ind)
@@ -297,6 +305,14 @@ func (p *PanelHolder) SetMaxLabelLength(length int) {
 	for _, e := range p.entries {
 		e.Tab.SetMaxLabelLength(length)
 	}
+}
+
+func (p *PanelHolder) SwitchMode() gxui.SwitchMode {
+	return p.switchMode
+}
+
+func (p *PanelHolder) SetSwitchMode(mode gxui.SwitchMode) {
+	p.switchMode = mode
 }
 
 func (p *PanelHolder) update() {

@@ -4,6 +4,13 @@
 
 package gxui
 
+type SwitchMode int
+
+const (
+	Linear SwitchMode = iota
+	Circular
+)
+
 type PanelHolder interface {
 	Control
 	AddPanel(panel Control, name string)
@@ -19,4 +26,6 @@ type PanelHolder interface {
 	Begin() int
 	End() int
 	SetMaxLabelLength(int)
+	SwitchMode() SwitchMode
+	SetSwitchMode(SwitchMode)
 }
