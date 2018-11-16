@@ -5,10 +5,13 @@
 package gxui
 
 type SwitchMode int
+type SwitchButtonMode int
 
 const (
 	Linear SwitchMode = iota
 	Circular
+	Smart SwitchButtonMode = iota
+	Constant
 )
 
 type PanelHolder interface {
@@ -28,4 +31,6 @@ type PanelHolder interface {
 	SetMaxLabelLength(int)
 	SwitchMode() SwitchMode
 	SetSwitchMode(SwitchMode)
+	SwitchButtonMode() SwitchButtonMode
+	SetSwitchButtonMode(SwitchButtonMode)
 }

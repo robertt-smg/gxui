@@ -52,7 +52,8 @@ type PanelHolder struct {
 	begin int
 	end   int
 
-	switchMode gxui.SwitchMode
+	switchMode       gxui.SwitchMode
+	switchButtonMode gxui.SwitchButtonMode
 }
 
 func insertIndex(holder gxui.PanelHolder, at math.Point) int {
@@ -111,6 +112,7 @@ func (p *PanelHolder) Init(outer PanelHolderOuter, theme gxui.Theme) {
 	p.tabLayout.SetDirection(gxui.LeftToRight)
 
 	p.left = p.outer.CreatePanelTab()
+	p.left.SetVisible(p.begin != 0)
 	p.left.SetText("<-")
 	p.left.OnClick(func(ev gxui.MouseEvent) {
 		p.SelectPrev()
@@ -122,11 +124,14 @@ func (p *PanelHolder) Init(outer PanelHolderOuter, theme gxui.Theme) {
 	p.right.OnClick(func(ev gxui.MouseEvent) {
 		p.SelectNext()
 	})
+	p.right.SetVisible(p.end < len(p.entries))
 	p.tabLayout.AddChild(p.right)
 
 	p.Container.AddChild(p.tabLayout)
 	p.SetMargin(math.Spacing{L: 1, T: 2, R: 1, B: 1})
 	p.SetMouseEventTarget(true) // For drag-drop targets
+
+	p.switchButtonMode = gxui.Smart
 
 	// Interface compliance test
 	_ = gxui.PanelHolder(p)
@@ -315,6 +320,14 @@ func (p *PanelHolder) SetSwitchMode(mode gxui.SwitchMode) {
 	p.switchMode = mode
 }
 
+func (p *PanelHolder) SwitchButtonMode() gxui.SwitchButtonMode {
+	return p.switchButtonMode
+}
+
+func (p *PanelHolder) SetSwitchButtonMode(mode gxui.SwitchButtonMode) {
+	p.switchButtonMode = mode
+}
+
 func (p *PanelHolder) update() {
 	for len(p.tabLayout.Children()) != 2 {
 		p.tabLayout.RemoveChildAt(1)
@@ -332,6 +345,11 @@ func (p *PanelHolder) update() {
 			p.end--
 			break
 		}
+	}
+
+	if p.switchButtonMode == gxui.Smart {
+		p.left.SetVisible(p.begin != 0)
+		p.right.SetVisible(p.end < len(p.entries))
 	}
 }
 
