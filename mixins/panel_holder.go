@@ -54,6 +54,7 @@ type PanelHolder struct {
 
 	switchMode       gxui.SwitchMode
 	switchButtonMode gxui.SwitchButtonMode
+	oldsize          math.Size
 }
 
 func insertIndex(holder gxui.PanelHolder, at math.Point) int {
@@ -139,6 +140,17 @@ func (p *PanelHolder) Init(outer PanelHolderOuter, theme gxui.Theme) {
 
 func (p *PanelHolder) LayoutChildren() {
 	s := p.Size()
+	if s != p.oldsize {
+		p.oldsize = s
+		idx := p.PanelIndex(p.selected.Panel)
+		if s.W != 0 && idx != -1 {
+			p.theme.Driver().Call(func() {
+				p.begin = 0
+				p.show(idx)
+			})
+		}
+	}
+
 	tabHeight := p.tabLayout.DesiredSize(math.ZeroSize, s).H
 	panelRect := math.CreateRect(0, tabHeight, s.W, s.H).Contract(p.Padding())
 
@@ -229,18 +241,7 @@ func (p *PanelHolder) Select(index int) {
 
 	if p.selected.Panel != nil {
 		p.Container.AddChild(p.selected.Panel)
-		p.update()
-		for !p.isSelectedShow() {
-			if index > p.begin {
-				p.begin++
-			} else if index < p.begin {
-				p.begin--
-			} else {
-				p.update()
-				break
-			}
-			p.update()
-		}
+		p.show(index)
 		p.selected.Tab.SetActive(true)
 	} else {
 		p.update()
@@ -356,4 +357,19 @@ func (p *PanelHolder) update() {
 func (p *PanelHolder) isSelectedShow() bool {
 	idx := p.PanelIndex(p.selected.Panel)
 	return (idx >= p.begin && idx < p.end)
+}
+
+func (p *PanelHolder) show(index int) {
+	p.update()
+	for !p.isSelectedShow() {
+		if index > p.begin {
+			p.begin++
+		} else if index < p.begin {
+			p.begin--
+		} else {
+			p.update()
+			break
+		}
+		p.update()
+	}
 }
