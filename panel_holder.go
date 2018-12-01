@@ -33,4 +33,6 @@ type PanelHolder interface {
 	SetSwitchMode(SwitchMode)
 	SwitchButtonMode() SwitchButtonMode
 	SetSwitchButtonMode(SwitchButtonMode)
+	SetRightSwitchButtonText(text string)
+	SetLeftSwitchButtonText(text string)
 }

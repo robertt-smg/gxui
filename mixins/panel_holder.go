@@ -329,6 +329,14 @@ func (p *PanelHolder) SetSwitchButtonMode(mode gxui.SwitchButtonMode) {
 	p.switchButtonMode = mode
 }
 
+func (p *PanelHolder) SetRightSwitchButtonText(text string) {
+	p.right.SetText(text)
+}
+
+func (p *PanelHolder) SetLeftSwitchButtonText(text string) {
+	p.left.SetText(text)
+}
+
 func (p *PanelHolder) update() {
 	for len(p.tabLayout.Children()) != 2 {
 		p.tabLayout.RemoveChildAt(1)
