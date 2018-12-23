@@ -27,6 +27,7 @@ type CodeEditor struct {
 	tabWidth           int
 	tabSpaces          bool
 	theme              gxui.Theme
+	hiddenLines        map[int]struct{}
 }
 
 func (e *CodeEditor) updateSpans(edits []gxui.TextBoxEdit) {
@@ -40,6 +41,7 @@ func (e *CodeEditor) Init(outer CodeEditorOuter, driver gxui.Driver, theme gxui.
 	e.outer = outer
 	e.tabWidth = 2
 	e.theme = theme
+	e.hiddenLines = map[int]struct{}{}
 
 	e.suggestionAdapter = &SuggestionAdapter{}
 	e.suggestionList = e.outer.CreateSuggestionList()
@@ -240,7 +242,12 @@ func (e *CodeEditor) KeyStroke(ev gxui.KeyStrokeEvent) (consume bool) {
 // mixins.TextBox overrides
 func (e *CodeEditor) CreateLine(theme gxui.Theme, index int) (TextBoxLine, gxui.Control) {
 	lineNumber := theme.CreateLabel()
-	lineNumber.SetText(fmt.Sprintf("%.4d", index+1)) // Displayed lines start at 1
+	lineNumber.SetText(fmt.Sprintf("%4d", index+1)) // Displayed lines start at 1
+	lineNumber.SetMargin(math.Spacing{L: 0, T: 0, R: 3, B: 0})
+
+	foldbutton := theme.CreateButton()
+	foldbutton.SetMargin(math.Spacing{L: 0, T: 0, R: 0, B: 0})
+	foldbutton.SetVisible(false)
 
 	line := &CodeEditorLine{}
 	line.Init(line, theme, e, index)
@@ -248,7 +255,12 @@ func (e *CodeEditor) CreateLine(theme gxui.Theme, index int) (TextBoxLine, gxui.
 	layout := theme.CreateLinearLayout()
 	layout.SetDirection(gxui.LeftToRight)
 	layout.AddChild(lineNumber)
+	layout.AddChild(foldbutton)
 	layout.AddChild(line)
+
+	if _, ok := e.hiddenLines[index]; ok {
+		layout.SetVisible(false)
+	}
 
 	return line, layout
 }
@@ -319,4 +331,22 @@ func (e *CodeEditor) ScrollToRune(i int) {
 	if horizEnd < pos.X {
 		e.SetHorizOffset(pos.X - size.W + padding.W() + lineOffset)
 	}
+}
+
+func (e *CodeEditor) RevealLines(from int, to int) {
+	for i := from; i <= to; i++ {
+		delete(e.hiddenLines, i)
+	}
+	e.LayoutChildren()
+}
+
+func (e *CodeEditor) HideLines(from int, to int) {
+	for i := from; i <= to; i++ {
+		e.hiddenLines[i] = struct{}{}
+		ctrl := e.ItemControl(i)
+		if ctrl != nil {
+			ctrl.SetVisible(false)
+		}
+	}
+	e.LayoutChildren()
 }

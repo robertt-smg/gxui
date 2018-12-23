@@ -25,4 +25,6 @@ type CodeEditor interface {
 	SetSuggestionProvider(CodeSuggestionProvider)
 	ShowSuggestionList()
 	HideSuggestionList()
+	HideLines(int, int)
+	RevealLines(int, int)
 }

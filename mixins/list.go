@@ -121,25 +121,32 @@ func (l *List) LayoutChildren() {
 		itemSize = math.Size{W: s.W, H: l.itemSize.H}
 	}
 
-	startIndex, endIndex := l.VisibleItemRange(true)
+	start, end := l.VisibleItemRange(true)
+
 	majorAxisItemSize := l.MajorAxisItemSize()
 
-	d := startIndex*majorAxisItemSize - l.scrollOffset
+	d := start*majorAxisItemSize - l.scrollOffset
 
 	mark := l.layoutMark
 	l.layoutMark++
-
-	for idx := startIndex; idx < endIndex; idx++ {
+	count := 0
+	idx := start
+	for ; count < (end-start) && idx < l.itemCount; idx++ {
 		item := l.adapter.ItemAt(idx)
-
 		details, found := l.details[item]
 		if found {
 			if details.mark == mark {
 				panic(fmt.Errorf("Adapter for control '%s' returned duplicate item (%v) for indices %v and %v",
 					gxui.Path(l.outer), item, details.index, idx))
 			}
+			if !details.child.Control.IsVisible() {
+				continue
+			}
 		} else {
 			control := l.adapter.Create(l.theme, idx)
+			if !control.IsVisible() {
+				continue
+			}
 			details.onClickSubscription = control.OnClick(func(ev gxui.MouseEvent) {
 				l.ItemClicked(ev, item)
 			})
@@ -150,6 +157,7 @@ func (l *List) LayoutChildren() {
 		l.details[item] = details
 
 		c := details.child
+
 		cm := c.Control.Margin()
 		cs := itemSize.Contract(cm).Max(math.ZeroSize)
 		if l.orientation.Horizontal() {
@@ -158,6 +166,7 @@ func (l *List) LayoutChildren() {
 			c.Layout(math.CreateRect(cm.L, d, cm.L+cs.W, d+cs.H).Offset(o))
 		}
 		d += majorAxisItemSize
+		count++
 	}
 
 	// Reap unused items
@@ -178,7 +187,7 @@ func (l *List) LayoutChildren() {
 		}
 
 		// Only show the scroll bar if needed
-		entireContentVisible := startIndex == 0 && endIndex == l.itemCount
+		entireContentVisible := start == 0 && idx == l.itemCount
 		l.scrollBar.SetVisible(!entireContentVisible)
 	}
 
