@@ -114,14 +114,25 @@ func (p *PanelHolder) Init(outer PanelHolderOuter, theme gxui.Theme) {
 
 	p.left = p.outer.CreatePanelTab()
 	p.left.SetVisible(p.begin != 0)
-	p.left.SetText("<-")
+
+	font := p.theme.DefaultFont()
+
+	if font.Index('◄') == 0 {
+		p.left.SetText("<-")
+	} else {
+		p.left.SetText("◄")
+	}
 	p.left.OnClick(func(ev gxui.MouseEvent) {
 		p.SelectPrev()
 	})
 	p.tabLayout.AddChild(p.left)
 
 	p.right = p.outer.CreatePanelTab()
-	p.right.SetText("->")
+	if font.Index('►') == 0 {
+		p.right.SetText("->")
+	} else {
+		p.right.SetText("►")
+	}
 	p.right.OnClick(func(ev gxui.MouseEvent) {
 		p.SelectNext()
 	})
