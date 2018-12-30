@@ -336,6 +336,7 @@ func (e *CodeEditor) ScrollToRune(i int) {
 func (e *CodeEditor) RevealLines(from int, to int) {
 	for i := from; i <= to; i++ {
 		delete(e.hiddenLines, i)
+		e.ChangeHiddenCount(-1)
 	}
 	e.LayoutChildren()
 }
@@ -343,6 +344,7 @@ func (e *CodeEditor) RevealLines(from int, to int) {
 func (e *CodeEditor) HideLines(from int, to int) {
 	for i := from; i <= to; i++ {
 		e.hiddenLines[i] = struct{}{}
+		e.ChangeHiddenCount(1)
 		ctrl := e.ItemControl(i)
 		if ctrl != nil {
 			ctrl.SetVisible(false)
