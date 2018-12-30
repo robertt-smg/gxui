@@ -49,6 +49,7 @@ type List struct {
 	scrollOffset             int
 	itemSize                 math.Size
 	itemCount                int // Count number of items in the adapter
+	hiddenItemCount          int
 	layoutMark               int
 	mousePosition            math.Point
 	itemMouseOver            *gxui.Child
@@ -256,14 +257,14 @@ func (l *List) SetScrollOffset(scrollOffset int) {
 		if l.scrollRound && l.itemSize.W != 0 {
 			scrollOffset -= scrollOffset % l.itemSize.W
 		}
-		maxScroll := math.Max(l.itemSize.W*l.itemCount-s.W, 0)
+		maxScroll := math.Max(l.itemSize.W*(l.itemCount-l.hiddenItemCount)-s.W, 0)
 		scrollOffset = math.Clamp(scrollOffset, 0, maxScroll)
 		l.scrollBar.SetScrollPosition(scrollOffset, scrollOffset+s.W)
 	} else {
 		if l.scrollRound && l.itemSize.H != 0 {
 			scrollOffset -= scrollOffset % l.itemSize.H
 		}
-		maxScroll := math.Max(l.itemSize.H*l.itemCount-s.H, 0)
+		maxScroll := math.Max(l.itemSize.H*(l.itemCount-l.hiddenItemCount)-s.H, 0)
 		scrollOffset = math.Clamp(scrollOffset, 0, maxScroll)
 		l.scrollBar.SetScrollPosition(scrollOffset, scrollOffset+s.H)
 	}
@@ -307,7 +308,7 @@ func (l *List) VisibleItemRange(includePartiallyVisible bool) (startIndex, endIn
 
 func (l *List) SizeChanged() {
 	l.itemSize = l.adapter.Size(l.theme)
-	l.scrollBar.SetScrollLimit(l.itemCount * l.MajorAxisItemSize())
+	l.scrollBar.SetScrollLimit((l.itemCount - l.hiddenItemCount) * l.MajorAxisItemSize())
 	l.SetScrollOffset(l.scrollOffset)
 	l.outer.Relayout()
 }
@@ -321,6 +322,7 @@ func (l *List) DataChanged(recreateControls bool) {
 		}
 	}
 	l.itemCount = l.adapter.Count()
+	l.hiddenItemCount = 0
 	l.SizeChanged()
 }
 
@@ -554,4 +556,8 @@ func (l *List) OnSelectionChanged(f func(gxui.AdapterItem)) gxui.EventSubscripti
 		l.onSelectionChanged = gxui.CreateEvent(f)
 	}
 	return l.onSelectionChanged.Listen(f)
+}
+
+func (l *List) ChangeHiddenCount(value int) {
+	l.hiddenItemCount += value
 }
