@@ -163,6 +163,9 @@ func (t *TextBox) LayoutChildren() {
 		maxLineWidth := t.outer.MaxLineWidth()
 		entireContentVisible := size.W > maxLineWidth
 		t.horizScroll.SetVisible(!entireContentVisible)
+		if entireContentVisible && t.horizOffset != 0 {
+			t.SetHorizOffset(0)
+		}
 	}
 }
 
