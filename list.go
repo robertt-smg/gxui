@@ -24,6 +24,7 @@ type List interface {
 	Select(AdapterItem) bool
 	OnSelectionChanged(func(AdapterItem)) EventSubscription
 	OnItemClicked(func(MouseEvent, AdapterItem)) EventSubscription
+	ChangeHiddenCount(int)
 }
 
 // ListAdapter is an interface used to visualize a flat set of items.
