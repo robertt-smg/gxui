@@ -205,8 +205,8 @@ func (p *PanelHolder) AddPanelAt(panel gxui.Control, name string, index int) {
 	p.entries = append(p.entries, PanelEntry{})
 	copy(p.entries[index+1:], p.entries[index:])
 	p.entries[index] = PanelEntry{
-		Panel: panel,
-		Tab:   tab,
+		Panel:                 panel,
+		Tab:                   tab,
 		MouseDownSubscription: mds,
 	}
 
@@ -262,31 +262,33 @@ func (p *PanelHolder) Select(index int) {
 func (p *PanelHolder) SelectNext() {
 	ind := p.PanelIndex(p.selected.Panel)
 	N := p.PanelCount()
-	if N != 0 {
-		ind = ind + 1
-		if ind == N {
-			if p.switchMode == gxui.Linear {
-				return
-			}
-			ind = 0
-		}
-		p.Select(ind)
+	if N == 0 {
+		return
 	}
+	ind += 1
+	if ind == N {
+		if p.switchMode == gxui.Linear {
+			return
+		}
+		ind = 0
+	}
+	p.Select(ind)
 }
 
 func (p *PanelHolder) SelectPrev() {
 	ind := p.PanelIndex(p.selected.Panel)
 	N := p.PanelCount()
-	if N != 0 {
-		ind = ind - 1
-		if ind < 0 {
-			if p.switchMode == gxui.Linear {
-				return
-			}
-			ind = N - 1
-		}
-		p.Select(ind)
+	if N == 0 {
+		return
 	}
+	ind -= 1
+	if ind < 0 {
+		if p.switchMode == gxui.Linear {
+			return
+		}
+		ind = N - 1
+	}
+	p.Select(ind)
 }
 
 func (p *PanelHolder) PanelCount() int {
