@@ -254,10 +254,10 @@ func (e *CodeEditor) CreateLine(theme gxui.Theme, index int) (TextBoxLine, gxui.
 }
 
 func (e *CodeEditor) SetHorizOffset(offset int) {
-	e.updateHorizScrollLimit()
-	e.updateChildOffsets(e, offset)
-	e.horizScroll.SetScrollPosition(offset, offset+e.Size().W)
 	if e.horizOffset != offset {
+		e.updateHorizScrollLimit()
+		e.updateChildOffsets(e, offset)
+		e.horizScroll.SetScrollPosition(offset, offset+e.Size().W)
 		e.horizOffset = offset
 		e.LayoutChildren()
 	}
