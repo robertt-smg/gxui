@@ -6,7 +6,7 @@ package gxui
 
 import (
 	"fmt"
-	"github.com/nelsam/gxui/math"
+	"gxui/math"
 	"reflect"
 	"runtime"
 )

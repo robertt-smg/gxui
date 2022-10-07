@@ -4,8 +4,10 @@
 
 package math
 
-import test "github.com/nelsam/gxui/testing"
-import "testing"
+import (
+	test "gxui/testing"
+	"testing"
+)
 
 func TestSizeEdgeAlignedFitTopEdge(t *testing.T) {
 	outer := CreateRect(0, 0, 100, 100)

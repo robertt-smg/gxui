@@ -4,8 +4,8 @@
 
 package math
 
-import test "github.com/nelsam/gxui/testing"
 import (
+	test "gxui/testing"
 	"testing"
 )
 

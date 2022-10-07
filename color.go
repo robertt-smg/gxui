@@ -4,7 +4,7 @@
 
 package gxui
 
-import "github.com/nelsam/gxui/math"
+import "gxui/math"
 
 var Transparent = Color{0.0, 0.0, 0.0, 0.0}
 

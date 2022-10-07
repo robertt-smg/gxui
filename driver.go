@@ -7,7 +7,7 @@ package gxui
 import (
 	"image"
 
-	"github.com/nelsam/gxui/math"
+	"gxui/math"
 )
 
 type Driver interface {

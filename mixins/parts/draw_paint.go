@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/mixins/outer"
+	"gxui"
+	"gxui/mixins/outer"
 )
 
 const debugVerifyDetachOnGC = false

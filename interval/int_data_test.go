@@ -4,9 +4,10 @@
 
 package interval
 
-import test "github.com/nelsam/gxui/testing"
-
-import "testing"
+import (
+	test "gxui/testing"
+	"testing"
+)
 
 func TestIntDataListReplace(t *testing.T) {
 	l := &IntDataList{

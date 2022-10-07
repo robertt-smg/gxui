@@ -5,9 +5,9 @@
 package mixins
 
 import (
-	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/math"
-	"github.com/nelsam/gxui/mixins/parts"
+	"gxui"
+	"gxui/math"
+	"gxui/mixins/parts"
 )
 
 type TreeOuter interface {

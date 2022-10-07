@@ -4,8 +4,10 @@
 
 package gxui
 
-import test "github.com/nelsam/gxui/testing"
-import "testing"
+import (
+	test "gxui/testing"
+	"testing"
+)
 
 func TestEventNoArgs(t *testing.T) {
 	e := CreateEvent(func() {})

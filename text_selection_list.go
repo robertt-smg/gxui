@@ -4,7 +4,7 @@
 
 package gxui
 
-import "github.com/nelsam/gxui/interval"
+import "gxui/interval"
 
 type TextSelectionList []TextSelection
 

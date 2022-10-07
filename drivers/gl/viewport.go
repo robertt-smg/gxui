@@ -10,12 +10,13 @@ import (
 	"sync/atomic"
 	"unicode"
 
+	"gxui"
+	"gxui/drivers/gl/platform"
+	"gxui/math"
+
 	glfw32 "github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/goxjs/gl"
 	"github.com/goxjs/glfw"
-	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/drivers/gl/platform"
-	"github.com/nelsam/gxui/math"
 )
 
 const viewportDebugEnabled = false

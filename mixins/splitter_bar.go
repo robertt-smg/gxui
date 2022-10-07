@@ -5,9 +5,9 @@
 package mixins
 
 import (
-	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/math"
-	"github.com/nelsam/gxui/mixins/base"
+	"gxui"
+	"gxui/math"
+	"gxui/mixins/base"
 )
 
 type SplitterBarOuter interface {

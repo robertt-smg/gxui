@@ -7,8 +7,8 @@ package mixins
 import (
 	"testing"
 
-	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/math"
+	"gxui"
+	"gxui/math"
 )
 
 type testTreeNode struct {

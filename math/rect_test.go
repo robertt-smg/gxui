@@ -4,8 +4,10 @@
 
 package math
 
-import test "github.com/nelsam/gxui/testing"
-import "testing"
+import (
+	test "gxui/testing"
+	"testing"
+)
 
 func TestRectConstrainWithin(t *testing.T) {
 	r1 := CreateRect(0, 0, 100, 100)

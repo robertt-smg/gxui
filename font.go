@@ -5,8 +5,9 @@
 package gxui
 
 import (
+	"gxui/math"
+
 	"github.com/golang/freetype/truetype"
-	"github.com/nelsam/gxui/math"
 )
 
 // A Font represents a TrueType font loaded by the GXUI driver.

@@ -5,7 +5,7 @@
 package outer
 
 import (
-	"github.com/nelsam/gxui"
+	"gxui"
 )
 
 type PaintChilder interface {

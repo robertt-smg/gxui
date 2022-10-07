@@ -4,8 +4,10 @@
 
 package math
 
-import test "github.com/nelsam/gxui/testing"
-import "testing"
+import (
+	test "gxui/testing"
+	"testing"
+)
 
 func TestMat3InvertIdent(t *testing.T) {
 	m := Mat3Ident.Invert()

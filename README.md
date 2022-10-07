@@ -5,7 +5,7 @@ GXUI - A Go cross platform UI library.
 
 For the awareness of anyone eyeing my fork of gxui:
 
-I originally forked this to solve some issues I was seeing with [the Go editor I'm writing](https://github.com/nelsam/vidar).
+I originally forked this to solve some issues I was seeing with [the Go editor I'm writing](https://vidar).
 I had planned to send pull requests for any bugs I managed to find and solve, but with it going unmaintained,
 I've started just aggressively changing anything that doesn't work (or read) how I want it to.  Most of my
 changes revolve around the CodeEditor and TextBox types.

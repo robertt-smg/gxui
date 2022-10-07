@@ -5,9 +5,9 @@
 package basic
 
 import (
-	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/math"
-	"github.com/nelsam/gxui/mixins"
+	"gxui"
+	"gxui/math"
+	"gxui/mixins"
 )
 
 func CreateLabel(theme *Theme) gxui.Label {

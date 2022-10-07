@@ -5,10 +5,10 @@
 package interval
 
 import (
-	test "github.com/nelsam/gxui/testing"
+	test "gxui/testing"
 	"math/rand"
+	"testing"
 )
-import "testing"
 
 func TestU64ListMergeFromEmpty(t *testing.T) {
 	l := &U64List{}

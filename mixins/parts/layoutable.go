@@ -7,9 +7,9 @@ package parts
 import (
 	"fmt"
 
-	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/math"
-	"github.com/nelsam/gxui/mixins/outer"
+	"gxui"
+	"gxui/math"
+	"gxui/mixins/outer"
 )
 
 type LayoutableOuter interface {

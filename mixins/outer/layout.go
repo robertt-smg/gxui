@@ -5,7 +5,7 @@
 package outer
 
 import (
-	"github.com/nelsam/gxui/math"
+	"gxui/math"
 )
 
 type Layout interface {

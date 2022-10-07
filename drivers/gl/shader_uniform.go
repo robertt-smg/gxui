@@ -7,8 +7,9 @@ package gl
 import (
 	"fmt"
 
-	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/math"
+	"gxui"
+	"gxui/math"
+
 	"github.com/goxjs/gl"
 )
 

@@ -7,9 +7,9 @@ package mixins
 import (
 	"strings"
 
-	"github.com/nelsam/gxui"
-	"github.com/nelsam/gxui/math"
-	"github.com/nelsam/gxui/mixins/base"
+	"gxui"
+	"gxui/math"
+	"gxui/mixins/base"
 )
 
 type LabelOuter interface {
