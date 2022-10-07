@@ -7,9 +7,9 @@ package mixins
 import (
 	"image"
 
-	"gxui"
-	"gxui/mixins/outer"
-	"gxui/mixins/parts"
+	"gitlab.com/fti_ticketshop_pub/gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui/mixins/outer"
+	"gitlab.com/fti_ticketshop_pub/gxui/mixins/parts"
 
 	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )

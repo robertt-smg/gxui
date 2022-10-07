@@ -10,8 +10,8 @@ import (
 	"sync/atomic"
 	"unicode"
 
-	"gxui"
-	"gxui/drivers/gl/platform"
+	"gitlab.com/fti_ticketshop_pub/gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui/drivers/gl/platform"
 
 	"gitlab.com/fti_ticketshop_pub/gxui/math"
 

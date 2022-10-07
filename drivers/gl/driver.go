@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui"
 
 	"gitlab.com/fti_ticketshop_pub/gxui/math"
 

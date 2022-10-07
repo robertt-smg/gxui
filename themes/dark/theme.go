@@ -7,9 +7,9 @@ package dark
 import (
 	"fmt"
 
-	"gxui"
-	"gxui/gxfont"
-	"gxui/themes/basic"
+	"gitlab.com/fti_ticketshop_pub/gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui/gxfont"
+	"gitlab.com/fti_ticketshop_pub/gxui/themes/basic"
 )
 
 func CreateTheme(driver gxui.Driver) gxui.Theme {

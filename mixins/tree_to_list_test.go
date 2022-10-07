@@ -7,7 +7,7 @@ package mixins
 import (
 	"testing"
 
-	"gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui"
 
 	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )

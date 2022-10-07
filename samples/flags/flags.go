@@ -7,9 +7,10 @@ package flags
 
 import (
 	"flag"
-	"gxui"
-	"gxui/themes/dark"
-	"gxui/themes/light"
+
+	"gitlab.com/fti_ticketshop_pub/gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui/themes/dark"
+	"gitlab.com/fti_ticketshop_pub/gxui/themes/light"
 )
 
 var DefaultScaleFactor float32

@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gxui"
-	"gxui/drivers/gl"
-	"gxui/samples/file_dlg/roots"
-	"gxui/samples/flags"
+	"gitlab.com/fti_ticketshop_pub/gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui/drivers/gl"
+	"gitlab.com/fti_ticketshop_pub/gxui/samples/file_dlg/roots"
+	"gitlab.com/fti_ticketshop_pub/gxui/samples/flags"
 
 	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )

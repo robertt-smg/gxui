@@ -5,8 +5,9 @@
 package gl
 
 import (
-	test "gxui/testing"
 	"testing"
+
+	test "gitlab.com/fti_ticketshop_pub/gxui/testing"
 
 	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )

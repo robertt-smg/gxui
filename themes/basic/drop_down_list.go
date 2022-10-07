@@ -5,8 +5,8 @@
 package basic
 
 import (
-	"gxui"
-	"gxui/mixins"
+	"gitlab.com/fti_ticketshop_pub/gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui/mixins"
 
 	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )

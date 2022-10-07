@@ -1,9 +1,9 @@
 package main
 
 import (
-	"gxui"
-	"gxui/drivers/gl"
-	"gxui/samples/flags"
+	"gitlab.com/fti_ticketshop_pub/gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui/drivers/gl"
+	"gitlab.com/fti_ticketshop_pub/gxui/samples/flags"
 )
 
 func appMain(driver gxui.Driver) {

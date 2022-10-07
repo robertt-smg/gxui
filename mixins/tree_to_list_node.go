@@ -7,7 +7,7 @@ package mixins
 import (
 	"fmt"
 
-	"gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui"
 )
 
 type treeToListNodeParent interface {

@@ -7,8 +7,8 @@ package mixins
 import (
 	"fmt"
 
-	"gxui"
-	"gxui/mixins/base"
+	"gitlab.com/fti_ticketshop_pub/gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui/mixins/base"
 
 	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )

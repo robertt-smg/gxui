@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"gxui/drivers/gl"
+	"gitlab.com/fti_ticketshop_pub/gxui/drivers/gl"
 )
 
 func TestCallQueue_Closed(t *testing.T) {

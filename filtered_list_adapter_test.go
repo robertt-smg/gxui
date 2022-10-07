@@ -5,9 +5,10 @@
 package gxui
 
 import (
-	test "gxui/testing"
 	"strings"
 	"testing"
+
+	test "gitlab.com/fti_ticketshop_pub/gxui/testing"
 )
 
 func calcScore(str, partial string) int {

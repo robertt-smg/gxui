@@ -5,8 +5,9 @@
 package interval
 
 import (
-	test "gxui/testing"
 	"testing"
+
+	test "gitlab.com/fti_ticketshop_pub/gxui/testing"
 )
 
 func TestIntDataListReplace(t *testing.T) {

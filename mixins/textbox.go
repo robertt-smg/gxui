@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"gxui"
-	"gxui/mixins/parts"
+	"gitlab.com/fti_ticketshop_pub/gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui/mixins/parts"
 
 	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )

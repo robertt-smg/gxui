@@ -5,8 +5,8 @@
 package mixins
 
 import (
-	"gxui"
-	"gxui/interval"
+	"gitlab.com/fti_ticketshop_pub/gxui"
+	"gitlab.com/fti_ticketshop_pub/gxui/interval"
 
 	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )

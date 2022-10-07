@@ -5,9 +5,10 @@
 package interval
 
 import (
-	test "gxui/testing"
 	"math/rand"
 	"testing"
+
+	test "gitlab.com/fti_ticketshop_pub/gxui/testing"
 )
 
 func TestU64ListMergeFromEmpty(t *testing.T) {
