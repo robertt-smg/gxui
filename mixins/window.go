@@ -8,9 +8,10 @@ import (
 	"image"
 
 	"gxui"
-	"gxui/math"
 	"gxui/mixins/outer"
 	"gxui/mixins/parts"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 type WindowOuter interface {

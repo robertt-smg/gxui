@@ -8,8 +8,9 @@ import (
 	"time"
 
 	"gxui"
-	"gxui/math"
 	"gxui/mixins"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 type ProgressBar struct {

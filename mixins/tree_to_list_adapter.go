@@ -6,7 +6,8 @@ package mixins
 
 import (
 	"gxui"
-	"gxui/math"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 // Interface used to visualize tree nodes in as a list.

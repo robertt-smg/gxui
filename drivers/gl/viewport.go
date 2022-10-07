@@ -12,7 +12,8 @@ import (
 
 	"gxui"
 	"gxui/drivers/gl/platform"
-	"gxui/math"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 
 	glfw32 "github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/goxjs/gl"

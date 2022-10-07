@@ -13,7 +13,8 @@ import (
 	"time"
 
 	"gxui"
-	"gxui/math"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 
 	"github.com/goxjs/gl"
 	"github.com/goxjs/glfw"

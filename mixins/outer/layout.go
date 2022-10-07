@@ -5,7 +5,7 @@
 package outer
 
 import (
-	"gxui/math"
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 type Layout interface {

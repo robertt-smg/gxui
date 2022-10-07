@@ -8,8 +8,9 @@ import (
 	"strings"
 
 	"gxui"
-	"gxui/math"
 	"gxui/mixins/base"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 type LabelOuter interface {

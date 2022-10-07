@@ -6,9 +6,10 @@ package mixins
 
 import (
 	"gxui"
-	"gxui/math"
 	"gxui/mixins/base"
 	"gxui/mixins/parts"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 type DropDownListOuter interface {

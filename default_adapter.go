@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"gxui/math"
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 type Viewer interface {

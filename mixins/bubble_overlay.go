@@ -6,8 +6,9 @@ package mixins
 
 import (
 	"gxui"
-	"gxui/math"
 	"gxui/mixins/base"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 type BubbleOverlayOuter interface {

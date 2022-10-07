@@ -10,7 +10,7 @@ import (
 	"image/png"
 	"os"
 
-	"gxui/math"
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 
 	fnt "golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"

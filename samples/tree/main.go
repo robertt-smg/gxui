@@ -7,8 +7,9 @@ package main
 import (
 	"gxui"
 	"gxui/drivers/gl"
-	"gxui/math"
 	"gxui/samples/flags"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 // item is used as an gxui.AdapterItem to identifiy each of the nodes.

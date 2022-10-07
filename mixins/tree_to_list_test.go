@@ -8,7 +8,8 @@ import (
 	"testing"
 
 	"gxui"
-	"gxui/math"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 type testTreeNode struct {

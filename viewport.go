@@ -7,7 +7,7 @@ package gxui
 import (
 	"image"
 
-	"gxui/math"
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 )

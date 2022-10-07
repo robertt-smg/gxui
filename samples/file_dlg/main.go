@@ -12,9 +12,10 @@ import (
 
 	"gxui"
 	"gxui/drivers/gl"
-	"gxui/math"
 	"gxui/samples/file_dlg/roots"
 	"gxui/samples/flags"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 var (

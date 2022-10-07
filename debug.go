@@ -6,9 +6,10 @@ package gxui
 
 import (
 	"fmt"
-	"gxui/math"
 	"reflect"
 	"runtime"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 func indent(depth int) string {

@@ -6,9 +6,10 @@ package base
 
 import (
 	"gxui"
-	"gxui/math"
 	"gxui/mixins/outer"
 	"gxui/mixins/parts"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 type ControlOuter interface {

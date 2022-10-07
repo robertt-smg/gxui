@@ -6,8 +6,9 @@ package basic
 
 import (
 	"gxui"
-	"gxui/math"
 	"gxui/mixins"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 func CreateLabel(theme *Theme) gxui.Label {

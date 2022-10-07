@@ -4,7 +4,7 @@
 
 package gxui
 
-import "gxui/math"
+import "gitlab.com/fti_ticketshop_pub/gxui/math"
 
 var Transparent = Color{0.0, 0.0, 0.0, 0.0}
 

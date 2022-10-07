@@ -5,8 +5,9 @@
 package gxui
 
 import (
-	"gxui/math"
 	"time"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 type ToolTipCreator func(math.Point) Control

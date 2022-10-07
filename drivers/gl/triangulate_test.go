@@ -5,9 +5,10 @@
 package gl
 
 import (
-	"gxui/math"
 	test "gxui/testing"
 	"testing"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 )
 
 func v(a, b float32) math.Vec2 {

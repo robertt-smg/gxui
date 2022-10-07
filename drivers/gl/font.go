@@ -9,7 +9,8 @@ import (
 	"unicode"
 
 	"gxui"
-	"gxui/math"
+
+	"gitlab.com/fti_ticketshop_pub/gxui/math"
 
 	"github.com/golang/freetype/truetype"
 	fnt "golang.org/x/image/font"

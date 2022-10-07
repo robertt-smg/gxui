@@ -4,7 +4,7 @@
 
 package gxui
 
-import "gxui/math"
+import "gitlab.com/fti_ticketshop_pub/gxui/math"
 
 // Control is the interface exposed by all UI control elements.
 type Control interface {
