@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"unicode/utf8"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 type ParentPoint struct {

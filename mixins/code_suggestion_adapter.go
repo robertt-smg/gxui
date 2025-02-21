@@ -5,7 +5,7 @@
 package mixins
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
+	"github.com/robertt-smg/gxui"
 )
 
 type SuggestionAdapter struct {

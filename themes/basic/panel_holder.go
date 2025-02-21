@@ -5,10 +5,10 @@
 package basic
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/mixins"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/mixins"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 type PanelHolder struct {

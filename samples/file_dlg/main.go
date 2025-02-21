@@ -10,12 +10,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/drivers/gl"
-	"gitlab.com/fti_ticketshop_pub/gxui/samples/file_dlg/roots"
-	"gitlab.com/fti_ticketshop_pub/gxui/samples/flags"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/drivers/gl"
+	"github.com/robertt-smg/gxui/samples/file_dlg/roots"
+	"github.com/robertt-smg/gxui/samples/flags"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 var (

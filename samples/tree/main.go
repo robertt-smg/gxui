@@ -5,11 +5,11 @@
 package main
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/drivers/gl"
-	"gitlab.com/fti_ticketshop_pub/gxui/samples/flags"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/drivers/gl"
+	"github.com/robertt-smg/gxui/samples/flags"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 // item is used as an gxui.AdapterItem to identifiy each of the nodes.

@@ -5,8 +5,8 @@
 package parts
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/mixins/outer"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/mixins/outer"
 )
 
 type AttachableOuter interface {

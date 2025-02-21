@@ -8,7 +8,7 @@ import (
 	"math/rand"
 	"testing"
 
-	test "gitlab.com/fti_ticketshop_pub/gxui/testing"
+	test "github.com/robertt-smg/gxui/testing"
 )
 
 func TestU64ListMergeFromEmpty(t *testing.T) {

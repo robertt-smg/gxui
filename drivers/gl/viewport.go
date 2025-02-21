@@ -10,10 +10,10 @@ import (
 	"sync/atomic"
 	"unicode"
 
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/drivers/gl/platform"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/drivers/gl/platform"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 
 	glfw32 "github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/goxjs/gl"

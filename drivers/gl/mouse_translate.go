@@ -7,7 +7,7 @@ package gl
 import (
 	"fmt"
 
-	"gitlab.com/fti_ticketshop_pub/gxui"
+	"github.com/robertt-smg/gxui"
 
 	"github.com/goxjs/glfw"
 )

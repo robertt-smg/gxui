@@ -7,10 +7,10 @@ package mixins
 import (
 	"strings"
 
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/mixins/base"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/mixins/base"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 type LabelOuter interface {

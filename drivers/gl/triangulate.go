@@ -8,7 +8,7 @@ import (
 	"container/list"
 	"fmt"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 const debugTriangulate = false

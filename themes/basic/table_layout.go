@@ -1,8 +1,8 @@
 package basic
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/mixins"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/mixins"
 )
 
 func CreateTableLayout(theme *Theme) gxui.TableLayout {

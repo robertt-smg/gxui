@@ -5,9 +5,9 @@
 package gl
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
+	"github.com/robertt-smg/gxui"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 func appendVec2(arr []float32, vecs ...math.Vec2) []float32 {

@@ -4,7 +4,7 @@
 
 package gxui
 
-import "gitlab.com/fti_ticketshop_pub/gxui/interval"
+import "github.com/robertt-smg/gxui/interval"
 
 type TextSelectionList []TextSelection
 

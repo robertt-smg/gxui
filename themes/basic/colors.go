@@ -5,7 +5,7 @@
 package basic
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
+	"github.com/robertt-smg/gxui"
 )
 
 var Blue30 = gxui.Color{R: 0.0, G: 0.0, B: 0.3, A: 1.0}

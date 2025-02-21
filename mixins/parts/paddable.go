@@ -5,9 +5,9 @@
 package parts
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui/mixins/outer"
+	"github.com/robertt-smg/gxui/mixins/outer"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 type PaddableOuter interface {

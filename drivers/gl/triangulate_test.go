@@ -7,9 +7,9 @@ package gl
 import (
 	"testing"
 
-	test "gitlab.com/fti_ticketshop_pub/gxui/testing"
+	test "github.com/robertt-smg/gxui/testing"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 func v(a, b float32) math.Vec2 {

@@ -4,7 +4,7 @@
 
 package gxui
 
-import "gitlab.com/fti_ticketshop_pub/gxui/math"
+import "github.com/robertt-smg/gxui/math"
 
 type List interface {
 	Focusable

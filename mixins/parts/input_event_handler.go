@@ -5,7 +5,7 @@
 package parts
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
+	"github.com/robertt-smg/gxui"
 )
 
 type InputEventHandlerOuter interface{}

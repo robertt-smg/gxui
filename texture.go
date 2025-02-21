@@ -7,7 +7,7 @@ package gxui
 import (
 	"image"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 type Texture interface {

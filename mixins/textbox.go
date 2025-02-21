@@ -12,10 +12,10 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/mixins/parts"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/mixins/parts"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 type TextBoxLine interface {

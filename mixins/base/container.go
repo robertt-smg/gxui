@@ -5,9 +5,9 @@
 package base
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/mixins/outer"
-	"gitlab.com/fti_ticketshop_pub/gxui/mixins/parts"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/mixins/outer"
+	"github.com/robertt-smg/gxui/mixins/parts"
 )
 
 type ContainerNoControlOuter interface {

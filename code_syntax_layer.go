@@ -5,9 +5,9 @@
 package gxui
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/interval"
+	"github.com/robertt-smg/gxui/interval"
 )
 
 type CodeSyntaxLayer struct {

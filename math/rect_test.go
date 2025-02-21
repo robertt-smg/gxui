@@ -7,7 +7,7 @@ package math
 import (
 	"testing"
 
-	test "gitlab.com/fti_ticketshop_pub/gxui/testing"
+	test "github.com/robertt-smg/gxui/testing"
 )
 
 func TestRectConstrainWithin(t *testing.T) {

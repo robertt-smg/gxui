@@ -5,8 +5,8 @@
 package basic
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/mixins"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/mixins"
 )
 
 func CreateScrollLayout(theme *Theme) gxui.ScrollLayout {

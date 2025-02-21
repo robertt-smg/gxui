@@ -7,7 +7,7 @@ package gxui
 import (
 	"time"
 
-	"gitlab.com/fti_ticketshop_pub/gxui/math"
+	"github.com/robertt-smg/gxui/math"
 )
 
 type ToolTipCreator func(math.Point) Control

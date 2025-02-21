@@ -5,9 +5,9 @@
 package main
 
 import (
-	"gitlab.com/fti_ticketshop_pub/gxui"
-	"gitlab.com/fti_ticketshop_pub/gxui/drivers/gl"
-	"gitlab.com/fti_ticketshop_pub/gxui/samples/flags"
+	"github.com/robertt-smg/gxui"
+	"github.com/robertt-smg/gxui/drivers/gl"
+	"github.com/robertt-smg/gxui/samples/flags"
 )
 
 // Create a PanelHolder with a 3 panels
