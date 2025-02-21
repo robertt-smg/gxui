@@ -1,4 +1,4 @@
-module gitlab.com/fti_ticketshop_pub/gxui
+module github.com/robertt-smg/gxui
 
 go 1.19
 
